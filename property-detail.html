@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Elan — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);">
+  <div class="breadcrumb" id="breadcrumb"><a href="index.html">Home</a> / <a href="property.html">Əmlak</a> / <span id="crumb-title"></span></div>
+
+  <div id="gallery" class="gallery"></div>
+
+  <div class="detail-layout">
+    <div>
+      <div class="flex items-center gap-2" style="margin:var(--sp-4) 0 var(--sp-2);flex-wrap:wrap;" id="badge-row"></div>
+      <h1 id="detail-title" style="font-size:1.8rem;"></h1>
+      <div class="card-price" id="detail-price" style="font-size:1.6rem;margin-bottom:var(--sp-2);"></div>
+      <div class="muted" id="detail-loc">📍</div>
+
+      <div class="spec-grid" id="spec-grid"></div>
+
+      <h3>Təsvir</h3>
+      <p id="detail-desc"></p>
+
+      <div class="alert alert-warning" style="margin-top:var(--sp-4);">
+        <span>⚠️</span>
+        <div><b>Təhlükəsizlik xəbərdarlığı</b>IndustrCons heç vaxt sizdən SMS/OTP kodu, PIN və CVV tələb etmir. Ödəniş etməzdən əvvəl satıcını və məlumatları yoxlayın.</div>
+      </div>
+
+      <div class="flex gap-2" style="margin-top:var(--sp-4);">
+        <button class="btn btn-outline btn-sm" id="report-btn">🚩 Şikayət et</button>
+        <button class="btn btn-outline btn-sm" id="share-btn">↗ Paylaş</button>
+        <button class="btn btn-outline btn-sm" id="save-btn">♡ Yadda saxla</button>
+      </div>
+    </div>
+
+    <aside>
+      <div class="seller-card" id="seller-card"></div>
+      <div style="height:var(--sp-3);"></div>
+      <div class="trust-score" id="trust-mini"></div>
+    </aside>
+  </div>
+
+  <section class="section">
+    <h2>Oxşar elanlar</h2>
+    <div class="grid" id="related-grid"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="report-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="close-report">&times;</button>
+    <h3>Elanı şikayət et</h3>
+    <div class="form-group">
+      <label>Səbəb</label>
+      <select id="report-reason">
+        <option>Scam</option><option>Fake listing</option><option>Wrong price</option>
+        <option>Stolen image</option><option>Illegal item</option><option>Spam</option>
+        <option>Harassment</option><option>Phishing</option><option>Other</option>
+      </select>
+    </div>
+    <button class="btn btn-danger btn-block" id="submit-report">Göndər</button>
+  </div>
+</div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script src="js/security.js"></script>
+<script>
+  const id = icQueryParam("id") || IC_PROPERTY[0].id;
+  const item = findListingById(id) || IC_PROPERTY[0];
+
+  document.getElementById("page-title").textContent = `${item.title} — IndustrCons Market`;
+  document.getElementById("crumb-title").textContent = item.title;
+  document.getElementById("detail-title").textContent = item.title;
+  document.getElementById("detail-loc").textContent = `📍 ${item.location}, ${item.city}`;
+  document.getElementById("detail-desc").textContent = item.description;
+
+  const isProperty = item.kind === "property";
+  document.getElementById("detail-price").textContent = isProperty
+    ? `${icPrice(item.price)} ${item.priceUnit}`
+    : (item.kind==="equipment"
+        ? (item.forSale ? `${icPrice(item.salePrice)} AZN` : `${icPrice(item.rentPrice)} ${item.rentUnit}`)
+        : `${icPrice(item.price)} ${item.priceUnit}`);
+
+  document.getElementById("badge-row").innerHTML = `
+    ${item.premium ? '<span class="tag tag-premium">⭐ PREMIUM</span>' : ''}
+    ${isProperty ? `<span class="tag ${item.deal==='Satılır'?'tag-new':'tag-rent'}">${item.deal}</span>` : ''}
+  `;
+
+  document.getElementById("gallery").innerHTML = `
+    <div class="main-img"><img id="main-gallery-img" src="${item.images[0]}" alt="${item.title}"></div>
+    <div class="thumb-col">${item.images.slice(1,3).map(src=>`<div><img src="${src}"></div>`).join("")}</div>
+  `;
+  document.querySelectorAll(".thumb-col img").forEach(t=>{
+    t.addEventListener("click", ()=> document.getElementById("main-gallery-img").src = t.src);
+  });
+
+  let specs = [];
+  if(isProperty){
+    specs = [
+      ["Sahə", item.area + " m²"], ["Otaq", item.rooms || "—"], ["Mərtəbə", item.floor || "—"],
+      ["İl", item.year], ["Vəziyyət", item.condition], ["Parking", item.parking ? "Var" : "Yoxdur"],
+      ["Sənəd", item.docs], ["İpoteka", item.mortgage ? "Mümkündür" : "Yoxdur"]
+    ];
+  }
+  document.getElementById("spec-grid").innerHTML = specs.map(([l,v])=>`<div class="spec-item"><div class="label">${l}</div><div class="value">${v}</div></div>`).join("");
+
+  const s = item.seller;
+  document.getElementById("seller-card").innerHTML = `
+    <div class="seller-top">
+      <div class="avatar">${s.name.charAt(0)}</div>
+      <div>
+        <div style="font-weight:700;">${s.name}</div>
+        ${s.verified ? '<span class="verified-badge">'+ICON.check+' Verified Business</span>' : '<span class="muted" style="font-size:0.8rem;">Şəxsi satıcı</span>'}
+      </div>
+    </div>
+    <div class="rating">★ ${s.rating} · ${s.reviews} rəy</div>
+    <div class="detail-actions">
+      <button class="btn btn-dark btn-block" onclick="location.href='messages.html'">Mesaj göndər</button>
+    </div>
+    <button class="btn btn-outline btn-block" style="margin-top:8px;" id="show-phone">Telefonu göstər</button>
+  `;
+  document.getElementById("show-phone").addEventListener("click", (e)=>{ e.target.textContent = "+994 50 " + icRand(100,999) + " " + icRand(10,99) + " " + icRand(10,99); e.target.disabled = true; });
+
+  const trust = computeTrustScore({phoneVerified:s.phoneVerified, emailVerified:s.emailVerified, identitySubmitted:s.verified, businessVerified:s.type==="business"});
+  document.getElementById("trust-mini").innerHTML = `
+    <h4 style="margin-bottom:4px;">INDUSTRCONS TRUST</h4>
+    <div class="score-num">${trust} <span class="muted" style="font-size:1rem;">/ 100</span></div>
+    <div class="score-bar"><div class="score-fill" style="width:${trust}%;"></div></div>
+    <div class="trust-item ${s.phoneVerified?'ok':'warn'}">${s.phoneVerified?'✓':'⚠'} Telefon yoxlanılıb</div>
+    <div class="trust-item ${s.emailVerified?'ok':'warn'}">${s.emailVerified?'✓':'⚠'} E-poçt yoxlanılıb</div>
+    <div class="trust-item ${item.docs==='Çıxarış' ? 'ok':'warn'}">${item.docs==='Çıxarış' ? '✓ Əmlak sənədləri yoxlanılıb' : '⚠ Əmlak sənədləri təsdiqlənməyib'}</div>
+    <div class="disclaimer">Yoxlama nişanları yalnız platform daxilində atılan addımları göstərir və hüquqi zəmanət təşkil etmir.</div>
+  `;
+
+  icRenderCards("related-grid", IC_PROPERTY.filter(p=>p.id!==item.id && p.category===item.category).slice(0,4));
+
+  document.getElementById("report-btn").addEventListener("click", ()=> document.getElementById("report-modal").classList.add("open"));
+  document.getElementById("close-report").addEventListener("click", ()=> document.getElementById("report-modal").classList.remove("open"));
+  document.getElementById("submit-report").addEventListener("click", ()=>{
+    const res = reportListing(item.id, document.getElementById("report-reason").value);
+    document.getElementById("report-modal").classList.remove("open");
+    icToast(`Təşəkkürlər. Şikayət ID: ${res.reference}`, "success");
+  });
+  document.getElementById("share-btn").addEventListener("click", ()=> icToast("Keçid kopyalandı"));
+  document.getElementById("save-btn").addEventListener("click", (e)=> icToggleFavorite(item.id));
+</script>
+</body>
+</html>

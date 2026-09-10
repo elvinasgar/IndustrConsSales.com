@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace — IndustrCons Market</title>
+<meta name="description" content="Elektronika, ev əşyaları, tikinti materialları, alətlər və nəqliyyat — hamısı bir bazarda.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Marketplace</div>
+  <h1 style="font-size:1.9rem;">Marketplace</h1>
+
+  <div class="layout-filters">
+    <aside class="filter-panel">
+      <div class="filter-group">
+        <h4>Kateqoriya</h4>
+        <label><input type="checkbox" class="cat-filter" value="Elektronika"> Elektronika</label>
+        <label><input type="checkbox" class="cat-filter" value="Ev əşyaları"> Ev əşyaları</label>
+        <label><input type="checkbox" class="cat-filter" value="Tikinti materialları"> Tikinti materialları</label>
+        <label><input type="checkbox" class="cat-filter" value="Alətlər"> Alətlər</label>
+        <label><input type="checkbox" class="cat-filter" value="Nəqliyyat"> Nəqliyyat</label>
+      </div>
+      <div class="filter-group">
+        <h4>Vəziyyət</h4>
+        <div class="chip-row" id="status-chips">
+          <button class="chip" data-status="Yeni">Yeni</button>
+          <button class="chip" data-status="İşlənmiş">İşlənmiş</button>
+          <button class="chip" data-status="rent">İcarə mövcud</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Qiymət (AZN)</h4>
+        <div class="filter-row">
+          <input type="number" id="price-min" placeholder="Min">
+          <input type="number" id="price-max" placeholder="Max">
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Lokasiya</h4>
+        <select id="loc-filter" style="width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+          <option value="">Bütün ərazilər</option>
+          <option>Bakı</option><option>Sumqayıt</option><option>Gəncə</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <h4>Satıcı tipi</h4>
+        <label><input type="checkbox" id="seller-business"> Yalnız biznes</label>
+        <label><input type="checkbox" id="seller-verified"> Yalnız yoxlanılmış</label>
+      </div>
+      <button class="btn btn-dark btn-block" id="apply-filters">Filtrlə</button>
+      <button class="btn btn-ghost btn-block" id="reset-filters" style="margin-top:6px;">Sıfırla</button>
+    </aside>
+
+    <div>
+      <div class="toolbar">
+        <span class="muted" id="result-count">— nəticə</span>
+        <select id="sort-select">
+          <option value="relevance">Uyğunluq</option>
+          <option value="cheap">Ucuzdan bahaya</option>
+          <option value="expensive">Bahadan ucuza</option>
+          <option value="newest">Ən yeni</option>
+        </select>
+      </div>
+      <div class="grid" id="mp-grid"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script>
+  let state = { categories:[], status:[], location:"", priceMin:null, priceMax:null, sort:"relevance", page:1, businessOnly:false, verifiedOnly:false };
+  const PAGE_SIZE = 8;
+
+  const preCat = icQueryParam("category"); if(preCat) state.categories = [preCat];
+  const preStatus = icQueryParam("status"); if(preStatus) state.status = [preStatus];
+
+  function applyAll(){
+    let list = [...IC_MARKETPLACE];
+    if(state.categories.length) list = list.filter(i => state.categories.includes(i.category));
+    if(state.status.length){
+      list = list.filter(i => state.status.includes("rent") ? i.rentPrice : state.status.includes(i.status));
+    }
+    if(state.location) list = list.filter(i => i.city === state.location);
+    if(state.priceMin) list = list.filter(i => i.price >= state.priceMin);
+    if(state.priceMax) list = list.filter(i => i.price <= state.priceMax);
+    if(state.businessOnly) list = list.filter(i => i.seller.type === "business");
+    if(state.verifiedOnly) list = list.filter(i => i.seller.verified);
+
+    if(state.sort==="cheap") list.sort((a,b)=>a.price-b.price);
+    if(state.sort==="expensive") list.sort((a,b)=>b.price-a.price);
+    if(state.sort==="newest") list.sort((a,b)=>b.createdAt-a.createdAt);
+
+    document.getElementById("result-count").textContent = `${list.length} nəticə`;
+    const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+    if(state.page > totalPages) state.page = totalPages;
+    icRenderCards("mp-grid", list.slice((state.page-1)*PAGE_SIZE, state.page*PAGE_SIZE));
+    renderPagination(totalPages);
+  }
+  function renderPagination(totalPages){
+    const el = document.getElementById("pagination");
+    if(totalPages<=1){ el.innerHTML=""; return; }
+    el.innerHTML = Array.from({length:totalPages}).map((_,i)=>`<button class="${i+1===state.page?'active':''}" data-page="${i+1}">${i+1}</button>`).join("");
+    el.querySelectorAll("button").forEach(b => b.addEventListener("click", ()=>{ state.page = parseInt(b.dataset.page); applyAll(); window.scrollTo({top:300,behavior:"smooth"}); }));
+  }
+
+  document.querySelectorAll(".cat-filter").forEach(cb=>{
+    if(state.categories.includes(cb.value)) cb.checked = true;
+  });
+  document.getElementById("status-chips").addEventListener("click",(e)=>{
+    if(e.target.tagName!=="BUTTON") return;
+    e.target.classList.toggle("active");
+  });
+
+  document.getElementById("apply-filters").addEventListener("click", ()=>{
+    state.categories = [...document.querySelectorAll(".cat-filter:checked")].map(c=>c.value);
+    state.status = [...document.querySelectorAll("#status-chips .chip.active")].map(c=>c.dataset.status);
+    state.location = document.getElementById("loc-filter").value;
+    state.priceMin = parseFloat(document.getElementById("price-min").value)||null;
+    state.priceMax = parseFloat(document.getElementById("price-max").value)||null;
+    state.businessOnly = document.getElementById("seller-business").checked;
+    state.verifiedOnly = document.getElementById("seller-verified").checked;
+    state.page = 1;
+    applyAll();
+  });
+  document.getElementById("reset-filters").addEventListener("click", ()=>{
+    document.querySelectorAll(".cat-filter").forEach(c=>c.checked=false);
+    document.querySelectorAll("#status-chips .chip").forEach(c=>c.classList.remove("active"));
+    document.getElementById("loc-filter").value="";
+    document.getElementById("price-min").value=""; document.getElementById("price-max").value="";
+    document.getElementById("seller-business").checked=false; document.getElementById("seller-verified").checked=false;
+    state = { categories:[], status:[], location:"", priceMin:null, priceMax:null, sort:"relevance", page:1, businessOnly:false, verifiedOnly:false };
+    applyAll();
+  });
+  document.getElementById("sort-select").addEventListener("change", (e)=>{ state.sort = e.target.value; applyAll(); });
+
+  applyAll();
+</script>
+</body>
+</html>

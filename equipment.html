@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Texnika — IndustrCons Market</title>
+<meta name="description" content="Ekskavator, kran, forklift, generator və digər tikinti texnikası — satış və icarə elanları.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Texnika</div>
+  <h1 style="font-size:1.9rem;">IndustrCons Texnika</h1>
+  <p>Ağır texnika, qaldırıcılar, generatorlar və ölçmə avadanlıqları — satış və gündəlik icarə.</p>
+
+  <div class="cat-grid" style="margin-bottom:var(--sp-5);" id="equip-cat-grid"></div>
+
+  <div class="layout-filters">
+    <aside class="filter-panel">
+      <div class="filter-group">
+        <h4>Növ</h4>
+        <div class="chip-row">
+          <button class="chip" data-deal="sale">Satılır</button>
+          <button class="chip" data-deal="rent">İcarə</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Lokasiya</h4>
+        <select id="loc-filter" style="width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+          <option value="">Bütün ərazilər</option>
+          <option>Bakı</option><option>Sumqayıt</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <h4>Yanacaq</h4>
+        <label><input type="checkbox" class="fuel-filter" value="Dizel"> Dizel</label>
+        <label><input type="checkbox" class="fuel-filter" value="Elektrik"> Elektrik</label>
+        <label><input type="checkbox" class="fuel-filter" value="Benzin"> Benzin</label>
+      </div>
+      <button class="btn btn-dark btn-block" id="apply-filters">Filtrlə</button>
+      <button class="btn btn-ghost btn-block" id="reset-filters" style="margin-top:6px;">Sıfırla</button>
+    </aside>
+    <div>
+      <div class="toolbar">
+        <span class="muted" id="result-count">— nəticə</span>
+        <select id="sort-select">
+          <option value="relevance">Uyğunluq</option>
+          <option value="cheap">Ucuzdan bahaya</option>
+          <option value="expensive">Bahadan ucuza</option>
+          <option value="newest">Ən yeni</option>
+        </select>
+      </div>
+      <div class="grid" id="equip-grid"></div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script>
+  const equipCats = [...new Set(IC_EQUIPMENT.map(e=>e.category))];
+  document.getElementById("equip-cat-grid").innerHTML = equipCats.map(c=>`<button class="cat-card" data-eq-cat="${c}" style="border:1px solid var(--border);background:#fff;"><span class="cat-icon">🏗</span><span>${c}</span></button>`).join("");
+
+  let state = { deal:"", cat:"", location:"", fuels:[], sort:"relevance" };
+  if(icQueryParam("deal")==="rent") state.deal = "rent";
+
+  function applyAll(){
+    let list = [...IC_EQUIPMENT];
+    if(state.cat) list = list.filter(i=>i.category===state.cat);
+    if(state.deal==="sale") list = list.filter(i=>i.forSale);
+    if(state.deal==="rent") list = list.filter(i=>i.forRent);
+    if(state.location) list = list.filter(i=>i.city===state.location);
+    if(state.fuels.length) list = list.filter(i=>state.fuels.includes(i.fuel));
+    if(state.sort==="cheap") list.sort((a,b)=>(a.salePrice||a.rentPrice)-(b.salePrice||b.rentPrice));
+    if(state.sort==="expensive") list.sort((a,b)=>(b.salePrice||b.rentPrice)-(a.salePrice||a.rentPrice));
+    if(state.sort==="newest") list.sort((a,b)=>b.createdAt-a.createdAt);
+    document.getElementById("result-count").textContent = `${list.length} nəticə`;
+    icRenderCards("equip-grid", list);
+  }
+
+  document.getElementById("equip-cat-grid").addEventListener("click",(e)=>{
+    const btn = e.target.closest("[data-eq-cat]");
+    if(!btn) return;
+    document.querySelectorAll("#equip-cat-grid [data-eq-cat]").forEach(b=>b.style.borderColor="var(--border)");
+    const active = state.cat === btn.dataset.eqCat;
+    state.cat = active ? "" : btn.dataset.eqCat;
+    if(!active) btn.style.borderColor = "var(--signal)";
+    applyAll();
+  });
+  document.querySelectorAll(".layout-filters .chip-row .chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      document.querySelectorAll(".layout-filters .chip-row .chip").forEach(c=>c.classList.remove("active"));
+      const active = state.deal === chip.dataset.deal;
+      state.deal = active ? "" : chip.dataset.deal;
+      if(!active) chip.classList.add("active");
+      applyAll();
+    });
+  });
+  document.getElementById("apply-filters").addEventListener("click", ()=>{
+    state.location = document.getElementById("loc-filter").value;
+    state.fuels = [...document.querySelectorAll(".fuel-filter:checked")].map(c=>c.value);
+    applyAll();
+  });
+  document.getElementById("reset-filters").addEventListener("click", ()=>{
+    document.getElementById("loc-filter").value="";
+    document.querySelectorAll(".fuel-filter").forEach(c=>c.checked=false);
+    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+    state = { deal:"", cat:"", location:"", fuels:[], sort:"relevance" };
+    applyAll();
+  });
+  document.getElementById("sort-select").addEventListener("change",(e)=>{ state.sort=e.target.value; applyAll(); });
+
+  applyAll();
+</script>
+</body>
+</html>

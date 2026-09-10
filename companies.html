@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Şirkətlər — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Şirkətlər</div>
+  <h1 style="font-size:1.8rem;">Şirkət kataloqu</h1>
+  <p>Tikinti, əmlak, texnika icarəsi və mühəndislik sahələrində fəaliyyət göstərən doğrulanmış şirkətlər.</p>
+  <div class="grid grid-3" id="company-grid"></div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById("company-grid").innerHTML = IC_COMPANIES.map(c => `
+    <a href="company-detail.html?id=${c.id}" class="card" style="text-decoration:none;">
+      <div class="card-media" style="aspect-ratio:3/1;"><img src="${c.cover}" alt="${c.name}"></div>
+      <div class="card-body">
+        <div class="flex items-center gap-2">
+          <img src="${c.logo}" alt="" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">
+          <div>
+            <div class="card-title">${c.name} ${c.verified?'<span class="verified-badge">'+ICON.check+' Verified</span>':''}</div>
+            <div class="card-meta">${c.sector} · ${c.city}</div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="muted">${c.projects} layihə · ${c.listings} elan</span>
+          <span class="rating">★ ${c.rating}</span>
+        </div>
+      </div>
+    </a>
+  `).join("");
+</script>
+</body>
+</html>

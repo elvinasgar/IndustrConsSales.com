@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xidmətlər — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Xidmətlər</div>
+  <h1 style="font-size:1.8rem;">Xidmətlər bazarı</h1>
+  <p>Mühəndislik, dizayn, quraşdırma və layihə idarəetməsi xidmətləri — doğrulanmış təchizatçılardan.</p>
+  <div class="grid grid-3" id="service-grid"></div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById("service-grid").innerHTML = IC_SERVICES.map(s => `
+    <div class="card">
+      <div class="card-media"><img src="${s.images[0]}" alt="${s.title}"></div>
+      <div class="card-body">
+        <div class="card-title">${s.title}</div>
+        <div class="card-meta">${s.provider.name} ${s.provider.verified ? '<span class="verified-badge">'+ICON.check+' Verified Business</span>' : ''}</div>
+        <div class="rating">★ ${s.rating}</div>
+        <div class="card-loc">📍 ${s.location}</div>
+        <div class="muted" style="font-size:0.85rem;">${icPrice(s.priceFrom)} AZN-dan</div>
+        <button class="btn btn-dark btn-block" style="margin-top:8px;" onclick="location.href='messages.html'">Sorğu göndər</button>
+      </div>
+    </div>
+  `).join("");
+</script>
+</body>
+</html>

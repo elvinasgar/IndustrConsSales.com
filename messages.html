@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesajlar — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .chat-layout{ display:grid; grid-template-columns: 300px 1fr; gap: var(--sp-4); height: 64vh; min-height:420px; }
+  @media (max-width:800px){ .chat-layout{ grid-template-columns:1fr; height:auto; } }
+  .chat-list{ background:#fff; border:1px solid var(--border); border-radius:var(--radius-md); overflow-y:auto; }
+  .chat-list-item{ padding:14px; border-bottom:1px solid var(--concrete-100); cursor:pointer; }
+  .chat-list-item.active{ background: var(--concrete-100); }
+  .chat-window{ background:#fff; border:1px solid var(--border); border-radius:var(--radius-md); display:flex; flex-direction:column; }
+  .chat-header{ padding:14px; border-bottom:1px solid var(--border); font-weight:700; }
+  .chat-body{ flex:1; padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+  .bubble{ max-width:70%; padding:10px 14px; border-radius:12px; font-size:0.9rem; }
+  .bubble.them{ background: var(--concrete-100); align-self:flex-start; }
+  .bubble.me{ background: var(--ink); color:#fff; align-self:flex-end; }
+  .chat-input{ display:flex; gap:8px; padding:12px; border-top:1px solid var(--border); }
+  .chat-input input{ flex:1; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <h1 style="font-size:1.6rem;">Mesajlar</h1>
+  <div class="chat-layout">
+    <div class="chat-list" id="chat-list"></div>
+    <div class="chat-window">
+      <div class="chat-header" id="chat-header">Ali — JCB 3CX</div>
+      <div class="chat-body" id="chat-body"></div>
+      <div id="chat-security-slot"></div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Mesajınızı yazın...">
+        <button class="btn btn-primary" id="send-btn">Göndər</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/security.js"></script>
+<script>
+  const threads = [
+    { name:"Ali", listing:"JCB 3CX", messages:[
+      {from:"them", text:"Salam, maşın hələ satılırmı?"},
+      {from:"me", text:"Bəli, satılır."},
+      {from:"them", text:"Sabah baxmaq olarmı?"},
+      {from:"me", text:"Bəli, saat 15:00 uyğundur."}
+    ]},
+    { name:"Nərmin", listing:"3 otaqlı mənzil", messages:[
+      {from:"them", text:"Qiymətdə endirim mümkündürmü?"},
+      {from:"me", text:"Baxışdan sonra danışa bilərik."}
+    ]},
+    { name:"Kamran", listing:"iPhone 14 Pro", messages:[
+      {from:"them", text:"Malın qorunması üçün 20% avans şəxsi kartınıza köçürüm?"}
+    ]},
+  ];
+  let active = 0;
+
+  function renderList(){
+    document.getElementById("chat-list").innerHTML = threads.map((t,i)=>`
+      <div class="chat-list-item ${i===active?'active':''}" data-i="${i}">
+        <div style="font-weight:600;">${t.name}</div>
+        <div class="muted" style="font-size:0.82rem;">${t.listing}</div>
+        <div class="muted" style="font-size:0.78rem;">${t.messages[t.messages.length-1].text.slice(0,34)}...</div>
+      </div>`).join("");
+    document.querySelectorAll(".chat-list-item").forEach(el=> el.addEventListener("click", ()=>{ active = parseInt(el.dataset.i); renderList(); renderChat(); }));
+  }
+  function renderChat(){
+    const t = threads[active];
+    document.getElementById("chat-header").textContent = `${t.name} — ${t.listing}`;
+    document.getElementById("chat-body").innerHTML = t.messages.map(m=>`<div class="bubble ${m.from==='me'?'me':'them'}">${m.text}</div>`).join("");
+    const lastText = t.messages.map(m=>m.text).join(" ");
+    const scan = scanTextForFraud(lastText);
+    document.getElementById("chat-security-slot").innerHTML = scan.flagged
+      ? `<div class="alert alert-warning" style="margin:0 12px 12px;">⚠ <div>Be careful with payment links and requests for personal banking information.</div></div>`
+      : "";
+  }
+  document.getElementById("send-btn").addEventListener("click", ()=>{
+    const input = document.getElementById("chat-input");
+    if(!input.value.trim()) return;
+    threads[active].messages.push({from:"me", text: input.value.trim()});
+    input.value = "";
+    renderChat();
+  });
+  renderList(); renderChat();
+</script>
+</body>
+</html>

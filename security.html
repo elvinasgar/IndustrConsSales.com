@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Təhlükəsizlik Mərkəzi — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);max-width:920px;">
+  <h1 style="font-size:1.8rem;">INDUSTRCONS SECURITY CENTER</h1>
+  <p>Özünüzü fırıldaqçılıqdan qorumaq üçün bu bələdçini oxuyun.</p>
+
+  <div class="alert alert-danger" style="margin-bottom:var(--sp-5);">
+    <span>🚫</span>
+    <div><b>Heç vaxt paylaşmayın</b>Parolunuzu, OTP/SMS təsdiq kodunuzu, PIN və CVV nömrənizi başqa şəxslə paylaşmayın.</div>
+  </div>
+
+  <h2>Özünüzü fırıldaqçılıqdan qoruyun</h2>
+  <div class="grid grid-3" style="margin-bottom:var(--sp-6);">
+    <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">🎣 Phishing keçidləri</h3><p style="font-size:0.88rem;">Naməlum keçidlərə klikləməyin, xüsusilə ödəniş və ya "hesabınızı doğrulayın" tələb edən mesajlarda.</p></div>
+    <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">💳 Saxta ödəniş səhifələri</h3><p style="font-size:0.88rem;">IndustrCons xaricindəki heç bir ödəniş formuna bank məlumatlarınızı daxil etməyin.</p></div>
+    <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">👤 Saxta admin hesabları</h3><p style="font-size:0.88rem;">Platform admini sizdən şəxsi mesajla ödəniş və ya kod istəmir.</p></div>
+    <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">📦 Saxta kuryer mesajları</h3><p style="font-size:0.88rem;">Çatdırılma üçün əvvəlcədən ödəniş tələb edən mesajlara etibar etməyin.</p></div>
+    <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">🔑 OTP/SMS kod oğurluğu</h3><p style="font-size:0.88rem;">Kodunuzu heç kimlə — hətta "dəstək xidməti" adı ilə yazan şəxslə belə — paylaşmayın.</p></div>
+    <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">💰 Avans ödəniş fırıldaqçılığı</h3><p style="font-size:0.88rem;">Görüşdən əvvəl "beh" və ya "depozit" adı ilə pul tələb edən elanlara ehtiyatlı yanaşın.</p></div>
+  </div>
+
+  <h2>Nümunələr</h2>
+  <div class="scam-example">
+    <div class="risk-badge risk-high" style="display:inline-block;">🚨 HIGH RISK</div>
+    <div class="quote">"Ödənişinizi almaq üçün bu keçidə klikləyin."</div>
+    <p style="margin:0;"><b>DO NOT CLICK.</b> IndustrCons sizdən heç vaxt şübhəli xarici keçid vasitəsilə bank məlumatı tələb etmir.</p>
+  </div>
+  <div class="scam-example">
+    <div class="risk-badge risk-high" style="display:inline-block;">🚨 HIGH RISK</div>
+    <div class="quote">"Malın qorunması üçün 20% avans şəxsi kartıma köçürün."</div>
+    <p style="margin:0;">Etibarlı satıcılar adətən görüşdə, mala baxdıqdan sonra ödəniş qəbul edir. Şəxsi karta əvvəlcədən ödəniş tələbi ilə diqqətli olun.</p>
+  </div>
+
+  <h2 id="report">Şikayət et</h2>
+  <p>Şübhəli elan və ya istifadəçi ilə qarşılaşdınız? Bizə bildirin.</p>
+  <button class="btn btn-danger" id="open-report">🚩 Report Scam</button>
+
+  <div class="disclaimer" style="margin-top:var(--sp-6);">Verification badges indicate platform verification steps only and do not constitute a legal guarantee.</div>
+</main>
+
+<div id="site-footer"></div>
+
+<div class="modal-overlay" id="scam-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="close-scam">&times;</button>
+    <h3>Fırıldaqçılığı bildirin</h3>
+    <div class="form-group"><label>Elan ID və ya istifadəçi</label><input type="text" id="scam-target" placeholder="Məs: IC-10452"></div>
+    <div class="form-group"><label>Nə baş verdi?</label><textarea rows="4" id="scam-details" placeholder="Qısaca izah edin..."></textarea></div>
+    <button class="btn btn-danger btn-block" id="submit-scam">Göndər</button>
+  </div>
+</div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/security.js"></script>
+<script>
+  document.getElementById("open-report").addEventListener("click", ()=> document.getElementById("scam-modal").classList.add("open"));
+  document.getElementById("close-scam").addEventListener("click", ()=> document.getElementById("scam-modal").classList.remove("open"));
+  document.getElementById("submit-scam").addEventListener("click", ()=>{
+    const res = reportListing(document.getElementById("scam-target").value, "Scam");
+    document.getElementById("scam-modal").classList.remove("open");
+    icToast(`Təşəkkürlər. Şikayət ID: ${res.reference}. Moderasiya komandamız araşdıracaq.`, "success");
+  });
+</script>
+</body>
+</html>

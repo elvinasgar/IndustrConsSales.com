@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Şirkət — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div id="company-cover" style="height:220px;background-size:cover;background-position:center;"></div>
+<main class="container" style="padding-top:var(--sp-4);padding-bottom:var(--sp-8);">
+  <div class="flex items-center gap-3" style="margin-top:-52px;position:relative;">
+    <img id="company-logo" style="width:88px;height:88px;border-radius:8px;border:4px solid #fff;object-fit:cover;background:#fff;">
+    <div>
+      <h1 id="company-name" style="font-size:1.6rem;margin-bottom:2px;"></h1>
+      <div class="muted" id="company-meta"></div>
+    </div>
+  </div>
+
+  <div class="tabs" style="margin-top:var(--sp-5);">
+    <button class="active" data-tab="about">About</button>
+    <button data-tab="projects">Projects</button>
+    <button data-tab="products">Products</button>
+    <button data-tab="property">Property</button>
+    <button data-tab="equipment">Equipment</button>
+    <button data-tab="services">Services</button>
+    <button data-tab="reviews">Reviews</button>
+    <button data-tab="contact">Contact</button>
+  </div>
+  <div id="tab-content"></div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const c = IC_COMPANIES.find(x=>x.id===icQueryParam("id")) || IC_COMPANIES[0];
+  document.getElementById("page-title").textContent = `${c.name} — IndustrCons Market`;
+  document.getElementById("company-cover").style.backgroundImage = `url(${c.cover})`;
+  document.getElementById("company-logo").src = c.logo;
+  document.getElementById("company-name").innerHTML = `${c.name} ${c.verified?'<span class="verified-badge">'+ICON.check+' Verified Company</span>':''}`;
+  document.getElementById("company-meta").textContent = `${c.sector} · ${c.city} · ★ ${c.rating} (${c.reviews} rəy)`;
+
+  const tabs = {
+    about: `<p>${c.about}</p><div class="spec-grid"><div class="spec-item"><div class="label">Layihələr</div><div class="value">${c.projects}</div></div><div class="spec-item"><div class="label">Elanlar</div><div class="value">${c.listings}</div></div><div class="spec-item"><div class="label">Xidmətlər</div><div class="value">${c.services}</div></div></div>`,
+    projects: `<div class="grid grid-3">${Array.from({length:3}).map((_,i)=>`<div class="card"><div class="card-media"><img src="${icImg('cproj'+c.id+i)}"></div><div class="card-body"><div class="card-title">Layihə ${i+1}</div><div class="card-meta">${c.city}, ${2022+i}</div></div></div>`).join("")}</div>`,
+    products: `<div class="grid" id="tab-products"></div>`,
+    property: `<div class="grid" id="tab-property"></div>`,
+    equipment: `<div class="grid" id="tab-equipment"></div>`,
+    services: `<div class="grid grid-3">${IC_SERVICES.slice(0,3).map(s=>`<div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">${s.title}</h3><div class="rating">★ ${s.rating}</div><p class="muted" style="font-size:0.85rem;">${s.category}</p></div>`).join("")}</div>`,
+    reviews: `<div class="card" style="padding:var(--sp-4);max-width:520px;"><div class="rating">★★★★★</div><p>"Peşəkar komanda, vaxtında təhvil verdilər."</p><div class="muted" style="font-size:0.8rem;">— müştəri rəyi</div></div>`,
+    contact: `<div class="seller-card" style="max-width:400px;"><div class="seller-top"><div class="avatar">${c.name.charAt(0)}</div><div><div style="font-weight:700;">${c.name}</div><div class="muted" style="font-size:0.85rem;">${c.city}</div></div></div><button class="btn btn-dark btn-block" onclick="location.href='messages.html'">Mesaj göndər</button></div>`
+  };
+  function renderTab(tab){
+    document.getElementById("tab-content").innerHTML = tabs[tab];
+    if(tab==="products") icRenderCards("tab-products", IC_MARKETPLACE.slice(0,4));
+    if(tab==="property") icRenderCards("tab-property", IC_PROPERTY.slice(0,4));
+    if(tab==="equipment") icRenderCards("tab-equipment", IC_EQUIPMENT.slice(0,4));
+  }
+  document.querySelector(".tabs").addEventListener("click",(e)=>{
+    if(e.target.tagName!=="BUTTON") return;
+    document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+    e.target.classList.add("active");
+    renderTab(e.target.dataset.tab);
+  });
+  renderTab("about");
+</script>
+</body>
+</html>

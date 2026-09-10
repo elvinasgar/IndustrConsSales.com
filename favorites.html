@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sevimlilər — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <h1 style="font-size:1.7rem;">Sevimli elanlar</h1>
+  <div class="tabs">
+    <button class="active">Saved Listings</button>
+    <button id="saved-searches-tab">Saved Searches</button>
+  </div>
+  <div class="grid" id="fav-grid"></div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script>
+  function render(){
+    const ids = icGetFavorites();
+    const items = icAllListings().filter(i => ids.includes(i.id));
+    if(!items.length){
+      document.getElementById("fav-grid").innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><span class="cat-icon">♡</span><h3>Hələ sevimli elanınız yoxdur</h3><p>Bəyəndiyiniz elanların üzərindəki ürək işarəsinə klikləyin.</p><a href="index.html" class="btn btn-dark">Elanlara bax</a></div>`;
+      return;
+    }
+    icRenderCards("fav-grid", items);
+  }
+  render();
+</script>
+</body>
+</html>

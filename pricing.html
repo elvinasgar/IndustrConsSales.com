@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qiymətlər — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <div class="text-center" style="max-width:640px;margin:0 auto var(--sp-6);">
+    <h1>Biznesinizə uyğun planı seçin</h1>
+    <p>İlk elanınızı pulsuz yerləşdirin, böyüdükcə planınızı yeniləyin.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <h3>FREE</h3>
+      <div class="price-num">0 <span>AZN</span></div>
+      <ul>
+        <li>✓ Əsas elanlar</li>
+        <li>✓ Standart görünürlük</li>
+        <li>✓ Əsas profil</li>
+      </ul>
+      <button class="btn btn-outline btn-block" onclick="location.href='post-listing.html'">Başla</button>
+    </div>
+    <div class="price-card featured">
+      <h3>PRO SELLER</h3>
+      <div class="price-num">19 <span>AZN/ay</span></div>
+      <ul>
+        <li>✓ Daha çox elan limiti</li>
+        <li>✓ Ətraflı statistika</li>
+        <li>✓ Prioritet sıralama</li>
+        <li>✓ Satıcı alətləri</li>
+      </ul>
+      <button class="btn btn-primary btn-block" onclick="icToast('Demo: PRO Seller planı seçildi', 'success')">Planı seç</button>
+    </div>
+    <div class="price-card">
+      <h3>BUSINESS</h3>
+      <div class="price-num">79 <span>AZN/ay</span></div>
+      <ul>
+        <li>✓ Şirkət səhifəsi</li>
+        <li>✓ Çoxlu istifadəçi</li>
+        <li>✓ Ətraflı analitika</li>
+        <li>✓ Daxili CRM</li>
+        <li>✓ Featured elanlar</li>
+      </ul>
+      <button class="btn btn-dark btn-block" onclick="icToast('Demo: Business planı seçildi', 'success')">Planı seç</button>
+    </div>
+  </div>
+  <p class="price-note">Example pricing — final pricing may change.</p>
+
+  <section class="section">
+    <h2>Premium listing seçimləri</h2>
+    <div class="grid grid-3">
+      <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">🚀 Boost listing</h3><p style="font-size:0.88rem;">Elanınızı 24 saat üçün siyahının başına çıxarın.</p></div>
+      <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">⭐ Featured listing</h3><p style="font-size:0.88rem;">Kateqoriya səhifəsində xüsusi bölmədə göstərilir.</p></div>
+      <div class="card" style="padding:var(--sp-4);"><h3 style="font-size:1rem;">🔥 Urgent badge</h3><p style="font-size:0.88rem;">Elanınıza "təcili" nişanı əlavə edin, diqqəti artırın.</p></div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <h2>Gələcək gəlir modelləri</h2>
+    <p class="muted">Platform böyüdükcə əlavə olunacaq monetizasiya istiqamətləri:</p>
+    <div class="grid grid-3">
+      <ul style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--sp-4);">
+        <li>Premium elanlar</li><li>Boost xidmətləri</li><li>Biznes abunəlikləri</li>
+      </ul>
+      <ul style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--sp-4);">
+        <li>Reklam</li><li>Texnika icarəsi komissiyası</li><li>Xidmət bazarı komissiyası</li>
+      </ul>
+      <ul style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--sp-4);">
+        <li>Lead generasiyası</li><li>Doğrulama xidmətləri</li><li>Biznes analitikası / API girişi</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

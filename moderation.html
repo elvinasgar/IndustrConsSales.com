@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — IndustrCons Moderasiya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <h1 style="font-size:1.7rem;">INDUSTRCONS ADMIN</h1>
+  <p class="muted">Avtomatlaşdırılmış təhlükəsizlik yoxlaması şübhəli məzmunu bayraqlayır, lakin qərar həmişə moderatora aiddir.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">126</div><div class="stat-label">Pending Listings</div></div>
+    <div class="stat-card"><div class="stat-num">18</div><div class="stat-label">Security Flags</div></div>
+    <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Reports</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Fraud Alerts</div></div>
+  </div>
+
+  <div class="detail-layout">
+    <div>
+      <h2>Moderation queue</h2>
+      <div id="mod-queue"></div>
+    </div>
+    <aside>
+      <h3>Audit log</h3>
+      <div class="audit-log" id="audit-log"></div>
+    </aside>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="close-reject">&times;</button>
+    <h3>Elanı rədd et</h3>
+    <div class="form-group">
+      <label>Səbəb</label>
+      <select id="reject-reason">
+        <option>Fake information</option><option>Duplicate listing</option>
+        <option>Suspicious payment request</option><option>Incorrect category</option>
+        <option>Prohibited item</option><option>Misleading price</option>
+        <option>Unauthorized property listing</option><option>Copyright/image issue</option><option>Other</option>
+      </select>
+    </div>
+    <button class="btn btn-danger btn-block" id="confirm-reject">Rədd et</button>
+  </div>
+</div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/moderation.js"></script>
+<script>
+  let activeRejectId = null;
+
+  function riskClass(score){ return score>=60?"risk-high":score>=30?"risk-med":"risk-low"; }
+
+  function renderQueue(){
+    const queue = getModerationQueue();
+    document.getElementById("mod-queue").innerHTML = queue.map(q => `
+      <div class="mod-queue-item" data-id="${q.id}">
+        <div class="mod-top">
+          <div class="flex gap-3">
+            <img src="${q.image}" style="width:70px;height:70px;object-fit:cover;border-radius:4px;">
+            <div>
+              <h3 style="margin-bottom:2px;">${q.title}</h3>
+              <div class="muted" style="font-size:0.85rem;">Listing #${q.id} · İstifadəçi: ${q.user}</div>
+            </div>
+          </div>
+          <div class="risk-badge ${riskClass(q.risk)}">${q.risk}/100</div>
+        </div>
+        ${q.flags.length ? `<ul class="flag-list">${q.flags.map(f=>`<li>⚠ ${f}</li>`).join("")}</ul>` : '<p class="muted" style="font-size:0.85rem;">Bayraq aşkarlanmadı.</p>'}
+        <div class="mod-actions">
+          <button class="btn btn-dark btn-sm" data-action="approve" data-id="${q.id}">Approve</button>
+          <button class="btn btn-danger btn-sm" data-action="reject" data-id="${q.id}">Reject</button>
+          <button class="btn btn-outline btn-sm" data-action="docs" data-id="${q.id}">Request Documents</button>
+          <button class="btn btn-outline btn-sm" data-action="suspend" data-id="${q.id}" data-user="${q.user}">Suspend User</button>
+          <button class="btn btn-outline btn-sm" data-action="escalate" data-id="${q.id}">Escalate</button>
+        </div>
+      </div>
+    `).join("");
+  }
+  function renderLog(){
+    document.getElementById("audit-log").innerHTML = IC_AUDIT_LOG.slice(0,10).map(l=>`<div class="log-line"><span class="log-time">${l.time}</span>${l.text}</div>`).join("");
+  }
+
+  document.getElementById("mod-queue").addEventListener("click",(e)=>{
+    const btn = e.target.closest("[data-action]"); if(!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    if(action==="approve"){ approveListing(id); icToast(`${id} təsdiqləndi`, "success"); }
+    else if(action==="reject"){ activeRejectId = id; document.getElementById("reject-modal").classList.add("open"); return; }
+    else if(action==="docs"){ requestDocuments(id); icToast(`${id} üçün sənəd tələb olundu`); }
+    else if(action==="suspend"){ suspendUser(btn.dataset.user); icToast(`${btn.dataset.user} bloklandı`, "danger"); }
+    else if(action==="escalate"){ icToast(`${id} böyük moderatora ötürüldü`); }
+    renderQueue(); renderLog();
+    document.querySelector(`.mod-queue-item[data-id="${id}"]`)?.remove();
+  });
+
+  document.getElementById("close-reject").addEventListener("click", ()=> document.getElementById("reject-modal").classList.remove("open"));
+  document.getElementById("confirm-reject").addEventListener("click", ()=>{
+    rejectListing(activeRejectId, document.getElementById("reject-reason").value);
+    document.getElementById("reject-modal").classList.remove("open");
+    icToast(`${activeRejectId} rədd edildi`, "danger");
+    renderLog();
+    document.querySelector(`.mod-queue-item[data-id="${activeRejectId}"]`)?.remove();
+  });
+
+  renderQueue(); renderLog();
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndustrCons Market — Əmlak, Marketplace, Texnika və Xidmətlər</title>
+<meta name="description" content="Azərbaycanda əmlak, məhsul, tikinti texnikası və xidmətləri bir platformada tapın. Alın, satın, icarəyə götürün — IndustrCons Market.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-tag">ALMAQ · SATMAQ · İCARƏYƏ GÖTÜRMƏK</div>
+      <h1>Əmlak, texnika və xidmətlər<br>bir platformada.</h1>
+      <p class="hero-sub">IndustrCons Market Azərbaycanın tikinti və sənaye sektoru üçün qurulmuş etibarlı bazardır — yoxlanılmış satıcılar, şəffaf elanlar.</p>
+
+      <form class="search-panel" id="hero-search-form">
+        <input type="text" id="hero-search-input" placeholder="Nə axtarırsınız? Məs: JCB 3CX, 3 otaqlı mənzil..." />
+        <select id="hero-cat-select">
+          <option value="">Kateqoriya</option>
+          <option value="property">Əmlak</option>
+          <option value="marketplace">Marketplace</option>
+          <option value="equipment">Texnika</option>
+          <option value="service">Xidmətlər</option>
+        </select>
+        <select id="hero-loc-select">
+          <option value="">Lokasiya</option>
+          <option>Bakı</option><option>Sumqayıt</option><option>Gəncə</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Axtar</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Populyar kateqoriyalar</h2><p>Ehtiyacınıza uyğun bölməni seçin</p></div>
+      </div>
+      <div class="cat-grid">
+        <a class="cat-card" href="property.html"><span class="cat-icon">🏠</span><span>Əmlak</span></a>
+        <a class="cat-card" href="marketplace.html"><span class="cat-icon">🛒</span><span>Marketplace</span></a>
+        <a class="cat-card" href="equipment.html"><span class="cat-icon">🏗</span><span>Texnika</span></a>
+        <a class="cat-card" href="marketplace.html?category=Tikinti%20materialları"><span class="cat-icon">🧰</span><span>Alət və material</span></a>
+        <a class="cat-card" href="services.html"><span class="cat-icon">👷</span><span>Xidmətlər</span></a>
+        <a class="cat-card" href="companies.html"><span class="cat-icon">🏢</span><span>Şirkətlər</span></a>
+        <a class="cat-card" href="marketplace.html?category=Nəqliyyat"><span class="cat-icon">🚗</span><span>Nəqliyyat</span></a>
+        <a class="cat-card" href="marketplace.html?status=Yeni"><span class="cat-icon">📦</span><span>Yeni məhsullar</span></a>
+        <a class="cat-card" href="marketplace.html?status=İşlənmiş"><span class="cat-icon">♻️</span><span>2-ci əl</span></a>
+        <a class="cat-card" href="equipment.html?deal=rent"><span class="cat-icon">🔄</span><span>İcarə</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Seçilmiş elanlar</h2><p>Platformada bu gün ən çox baxılan elanlar</p></div>
+        <a href="search.html" class="btn btn-outline btn-sm">Hamısına bax</a>
+      </div>
+      <div class="grid" id="featured-grid"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Tikinti texnikası</h2><p>Ekskavator, kran, generator və digər avadanlıqlar — satış və icarə</p></div>
+        <a href="equipment.html" class="btn btn-outline btn-sm">Hamısına bax</a>
+      </div>
+      <div class="grid" id="equipment-grid"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head" style="align-items:center;">
+        <div><h2>Etibarlı platforma</h2><p>Hər satıcı yoxlama mərhələlərindən keçir</p></div>
+      </div>
+      <div class="grid grid-3">
+        <div class="card" style="padding:var(--sp-5);">
+          <div class="cat-icon" style="font-size:2rem;">✓</div>
+          <h3>Yoxlanılmış satıcılar</h3>
+          <p>Telefon, e-poçt və biznes sənədləri təsdiqlənmiş satıcılarla işləyin.</p>
+        </div>
+        <div class="card" style="padding:var(--sp-5);">
+          <div class="cat-icon" style="font-size:2rem;">🛡</div>
+          <h3>Fırıldaqçılıq monitorinqi</h3>
+          <p>Şübhəli elanlar avtomatik aşkarlanır və moderatorlara göndərilir.</p>
+        </div>
+        <div class="card" style="padding:var(--sp-5);">
+          <div class="cat-icon" style="font-size:2rem;">📋</div>
+          <h3>Aydın moderasiya</h3>
+          <p>Hər elan dərcdən əvvəl yoxlanılır — saxta və aldadıcı məzmun rədd edilir.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Şirkətlər</h2><p>Öz mağazasını quran doğrulanmış biznes hesabları</p></div>
+        <a href="companies.html" class="btn btn-outline btn-sm">Hamısına bax</a>
+      </div>
+      <div class="grid grid-3" id="company-grid"></div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script>
+  icRenderCards("featured-grid", icAllListings().sort((a,b)=>b.views-a.views).slice(0,8));
+  icRenderCards("equipment-grid", IC_EQUIPMENT.slice(0,4));
+
+  document.getElementById("company-grid").innerHTML = IC_COMPANIES.slice(0,3).map(c => `
+    <a href="company-detail.html?id=${c.id}" class="card" style="text-decoration:none;">
+      <div class="card-media" style="aspect-ratio:3/1;"><img src="${c.cover}" alt="${c.name}"></div>
+      <div class="card-body">
+        <div class="flex items-center gap-2">
+          <img src="${c.logo}" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;">
+          <div>
+            <div class="card-title">${c.name} ${c.verified?'<span class="verified-badge">'+ICON.check+'</span>':''}</div>
+            <div class="card-meta">${c.sector} · ${c.city}</div>
+          </div>
+        </div>
+        <div class="card-foot"><span class="muted">${c.projects} layihə</span><span class="rating">★ ${c.rating}</span></div>
+      </div>
+    </a>
+  `).join("");
+
+  document.getElementById("hero-search-form").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const q = document.getElementById("hero-search-input").value.trim();
+    const cat = document.getElementById("hero-cat-select").value;
+    const loc = document.getElementById("hero-loc-select").value;
+    location.href = `search.html?q=${encodeURIComponent(q)}&type=${cat}&loc=${encodeURIComponent(loc)}`;
+  });
+</script>
+</body>
+</html>

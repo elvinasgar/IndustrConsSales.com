@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axtarış — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <h1 style="font-size:1.6rem;">"<span id="q-echo"></span>" üzrə nəticələr</h1>
+  <div class="tabs" id="result-tabs">
+    <button class="active" data-tab="all">All</button>
+    <button data-tab="property">Property</button>
+    <button data-tab="marketplace">Products</button>
+    <button data-tab="equipment">Equipment</button>
+    <button data-tab="service">Services</button>
+    <button data-tab="company">Companies</button>
+  </div>
+  <div class="grid" id="search-grid"></div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script>
+  const q = (icQueryParam("q") || "").trim();
+  document.getElementById("q-echo").textContent = q || "bütün";
+
+  function matches(item){
+    if(!q) return true;
+    const t = q.toLowerCase();
+    return (item.title || item.name || "").toLowerCase().includes(t) || (item.category||item.sector||"").toLowerCase().includes(t);
+  }
+
+  function renderTab(tab){
+    let results = [];
+    if(tab==="all" || tab==="property") results = results.concat(IC_PROPERTY.filter(matches));
+    if(tab==="all" || tab==="marketplace") results = results.concat(IC_MARKETPLACE.filter(matches));
+    if(tab==="all" || tab==="equipment") results = results.concat(IC_EQUIPMENT.filter(matches));
+    if(tab==="all" || tab==="service"){
+      const services = IC_SERVICES.filter(matches);
+      document.getElementById("search-grid").innerHTML = (tab==="service" ? "" : document.getElementById("search-grid").innerHTML);
+      results = results.concat(services.map(s=>({...s, kind:"marketplace", price:s.priceFrom, priceUnit:"AZN-dan", images:s.images.length?s.images:[icImg('sv')], seller:s.provider, location:s.location})));
+    }
+    if(tab==="company"){
+      document.getElementById("search-grid").innerHTML = IC_COMPANIES.filter(matches).map(c=>`
+        <a href="company-detail.html?id=${c.id}" class="card" style="text-decoration:none;">
+          <div class="card-media" style="aspect-ratio:3/1;"><img src="${c.cover}"></div>
+          <div class="card-body"><div class="card-title">${c.name}</div><div class="card-meta">${c.sector} · ${c.city}</div></div>
+        </a>`).join("") || `<div class="empty-state"><span class="cat-icon">🔍</span><h3>Nəticə yoxdur</h3></div>`;
+      return;
+    }
+    icRenderCards("search-grid", results);
+  }
+
+  document.getElementById("result-tabs").addEventListener("click",(e)=>{
+    if(e.target.tagName!=="BUTTON") return;
+    document.querySelectorAll("#result-tabs button").forEach(b=>b.classList.remove("active"));
+    e.target.classList.add("active");
+    renderTab(e.target.dataset.tab);
+  });
+
+  renderTab("all");
+</script>
+</body>
+</html>

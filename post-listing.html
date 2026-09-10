@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elan yerləşdir — IndustrCons Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <h1 style="font-size:1.8rem;">Elan yerləşdir</h1>
+
+  <div class="stepper" id="stepper">
+    <div class="step active" data-step="1">1. Növ</div>
+    <div class="step" data-step="2">2. Kateqoriya</div>
+    <div class="step" data-step="3">3. Tip</div>
+    <div class="step" data-step="4">4. Təfərrüat</div>
+    <div class="step" data-step="5">5. Satıcı</div>
+    <div class="step" data-step="6">6. Baxış</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="form-card step-panel" data-panel="1">
+    <h3>Nə yerləşdirmək istəyirsiniz?</h3>
+    <div class="type-grid" id="what-grid">
+      <div class="type-card" data-what="Əmlak"><div class="cat-icon">🏠</div><div>Əmlak</div></div>
+      <div class="type-card" data-what="Məhsul"><div class="cat-icon">🛒</div><div>Məhsul</div></div>
+      <div class="type-card" data-what="Texnika"><div class="cat-icon">🏗</div><div>Texnika</div></div>
+      <div class="type-card" data-what="Xidmət"><div class="cat-icon">🧰</div><div>Xidmət</div></div>
+      <div class="type-card" data-what="Nəqliyyat"><div class="cat-icon">🚗</div><div>Nəqliyyat</div></div>
+    </div>
+    <div class="form-actions"><span></span><button class="btn btn-primary" id="to-2" disabled>Növbəti</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="form-card step-panel" data-panel="2" style="display:none;">
+    <h3>Kateqoriya seçin</h3>
+    <div class="form-group">
+      <label>Kateqoriya</label>
+      <select id="category-select"></select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" data-back="1">Geri</button>
+      <button class="btn btn-primary" id="to-3">Növbəti</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="form-card step-panel" data-panel="3" style="display:none;">
+    <h3>Elan tipi</h3>
+    <div class="type-grid" id="listing-type-grid">
+      <div class="type-card" data-type="Satış üçün">Satış üçün</div>
+      <div class="type-card" data-type="İcarəyə">İcarəyə</div>
+      <div class="type-card" data-type="İşlənmiş">İşlənmiş</div>
+      <div class="type-card" data-type="Yeni">Yeni</div>
+      <div class="type-card" data-type="Dəyişdirmə">Dəyişdirmə</div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" data-back="2">Geri</button>
+      <button class="btn btn-primary" id="to-4" disabled>Növbəti</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="form-card step-panel" data-panel="4" style="display:none;">
+    <h3>Elan təfərrüatı</h3>
+    <div class="form-group"><label>Başlıq</label><input type="text" id="f-title" placeholder="Məs: JCB 3CX 2024, əla vəziyyətdə"></div>
+    <div class="form-group">
+      <label>Təsvir</label>
+      <textarea id="f-desc" rows="5" placeholder="Elanınızı ətraflı təsvir edin..."></textarea>
+      <div id="fraud-warning"></div>
+    </div>
+    <div class="form-group"><label>Qiymət (AZN)</label><input type="number" id="f-price" placeholder="0"></div>
+    <div class="form-group"><label>Lokasiya</label>
+      <select id="f-location"><option>Bakı — Yasamal</option><option>Bakı — Nərimanov</option><option>Bakı — Nəsimi</option><option>Sumqayıt</option><option>Gəncə</option></select>
+    </div>
+    <div class="form-group">
+      <label>Şəkillər</label>
+      <div class="upload-box" id="upload-box">📷 Şəkilləri buraya sürükləyin və ya klikləyin (demo)</div>
+      <div class="image-preview-row" id="preview-row"></div>
+    </div>
+    <div class="form-group">
+      <label>Əlaqə üsulu</label>
+      <label style="font-weight:400;"><input type="checkbox" checked> Mesaj</label>
+      <label style="font-weight:400;"><input type="checkbox" checked> Telefon zəngi</label>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" data-back="3">Geri</button>
+      <button class="btn btn-primary" id="to-5">Növbəti</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="form-card step-panel" data-panel="5" style="display:none;">
+    <h3>Satıcı məlumatı</h3>
+    <div class="form-group"><label>Ad Soyad / Şirkət adı</label><input type="text" id="f-seller-name" value="Elvin M."></div>
+    <div class="form-group"><label>Telefon</label><input type="text" id="f-seller-phone" placeholder="+994 __ ___ __ __"></div>
+    <div class="form-group"><label>Satıcı tipi</label>
+      <select id="f-seller-type"><option>Şəxsi</option><option>Biznes</option></select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" data-back="4">Geri</button>
+      <button class="btn btn-primary" id="to-6">Baxışa keç</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="form-card step-panel" data-panel="6" style="display:none;">
+    <h3>Elana önbaxış</h3>
+    <div class="card" style="max-width:360px;" id="preview-card"></div>
+    <div id="preview-fraud-block"></div>
+    <div class="form-actions">
+      <button class="btn btn-outline" data-back="5">Geri</button>
+      <button class="btn btn-primary" id="submit-listing">Moderasiyaya göndər</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="form-card" id="success-panel" style="display:none;text-align:center;">
+    <div style="font-size:2.6rem;">✅</div>
+    <h3>Elanınız göndərildi</h3>
+    <p>Elanınız moderasiya üçün qəbul edildi. Nəticə barədə bildiriş alacaqsınız.</p>
+    <div class="status-pill status-pending">PENDING MODERATION</div>
+    <p style="margin-top:var(--sp-3);">Referans: <b id="ref-code"></b></p>
+    <a href="my-listings.html" class="btn btn-dark">Elanlarıma keç</a>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script src="js/security.js"></script>
+<script>
+  const categoryMap = {
+    "Əmlak": ["Mənzil","Həyət evi","Villa","Torpaq","Ofis","Mağaza","Anbar","Sənaye əmlakı"],
+    "Məhsul": ["Elektronika","Ev əşyaları","Tikinti materialları","Alətlər"],
+    "Texnika": ["Ekskavatorlar","Kranlar","Forkliftlər","Generatorlar","Kompressorlar","Əl alətləri"],
+    "Xidmət": ["HVAC","Elektrik","Santexnika","İnteryer dizayn","Mühəndislik"],
+    "Nəqliyyat": ["Minik avtomobili","Yük maşını","Qoşqu","Ehtiyat hissələri"]
+  };
+  let listingData = { images: [] };
+
+  function goStep(n){
+    document.querySelectorAll(".step-panel").forEach(p=>p.style.display="none");
+    document.getElementById("success-panel").style.display="none";
+    document.querySelector(`.step-panel[data-panel="${n}"]`).style.display="block";
+    document.querySelectorAll(".stepper .step").forEach(s=>{
+      const sn = parseInt(s.dataset.step);
+      s.classList.toggle("active", sn===n);
+      s.classList.toggle("done", sn<n);
+    });
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  document.getElementById("what-grid").addEventListener("click",(e)=>{
+    const card = e.target.closest(".type-card"); if(!card) return;
+    document.querySelectorAll("#what-grid .type-card").forEach(c=>c.classList.remove("selected"));
+    card.classList.add("selected");
+    listingData.what = card.dataset.what;
+    document.getElementById("to-2").disabled = false;
+  });
+  document.getElementById("to-2").addEventListener("click", ()=>{
+    const sel = document.getElementById("category-select");
+    sel.innerHTML = categoryMap[listingData.what].map(c=>`<option>${c}</option>`).join("");
+    goStep(2);
+  });
+  document.getElementById("to-3").addEventListener("click", ()=>{
+    listingData.category = document.getElementById("category-select").value;
+    goStep(3);
+  });
+  document.getElementById("listing-type-grid").addEventListener("click",(e)=>{
+    const card = e.target.closest(".type-card"); if(!card) return;
+    document.querySelectorAll("#listing-type-grid .type-card").forEach(c=>c.classList.remove("selected"));
+    card.classList.add("selected");
+    listingData.type = card.dataset.type;
+    document.getElementById("to-4").disabled = false;
+  });
+  document.getElementById("to-4").addEventListener("click", ()=> goStep(4));
+
+  document.getElementById("f-desc").addEventListener("input",(e)=>{
+    const res = scanTextForFraud(e.target.value);
+    const el = document.getElementById("fraud-warning");
+    if(res.flagged){
+      el.innerHTML = `<div class="alert alert-danger" style="margin-top:8px;"><span>⚠</span><div><b>POTENTIAL FRAUD RISK</b>Bu mətndə avans ödəniş/OTP/şübhəli keçid ilə bağlı ifadələr aşkarlandı: ${res.reasons.join(", ")}. Elanınız əlavə moderasiyaya göndəriləcək.</div></div>`;
+    } else { el.innerHTML = ""; }
+  });
+
+  document.getElementById("upload-box").addEventListener("click", ()=>{
+    if(listingData.images.length >= 6){ icToast("Maksimum 6 şəkil"); return; }
+    listingData.images.push(icImg("upload"+listingData.images.length+Date.now()));
+    document.getElementById("preview-row").innerHTML = listingData.images.map(src=>`<div class="thumb"><img src="${src}"></div>`).join("");
+  });
+
+  document.getElementById("to-5").addEventListener("click", ()=>{
+    listingData.title = document.getElementById("f-title").value || "Adsız elan";
+    listingData.desc = document.getElementById("f-desc").value;
+    listingData.price = document.getElementById("f-price").value || 0;
+    listingData.location = document.getElementById("f-location").value;
+    goStep(5);
+  });
+  document.getElementById("to-6").addEventListener("click", ()=>{
+    listingData.sellerName = document.getElementById("f-seller-name").value;
+    listingData.sellerPhone = document.getElementById("f-seller-phone").value;
+    listingData.sellerType = document.getElementById("f-seller-type").value;
+
+    document.getElementById("preview-card").innerHTML = `
+      <div class="card-media"><img src="${listingData.images[0] || icImg('preview')}" alt=""></div>
+      <div class="card-body">
+        <div class="card-price">${icPrice(listingData.price)} AZN</div>
+        <div class="card-title">${listingData.title}</div>
+        <div class="card-meta">${listingData.category} · ${listingData.type}</div>
+        <div class="card-loc">📍 ${listingData.location}</div>
+        <div class="card-foot"><span class="seller-name">${listingData.sellerName}</span></div>
+      </div>`;
+
+    const fraud = scanTextForFraud(listingData.desc || "");
+    document.getElementById("preview-fraud-block").innerHTML = fraud.flagged
+      ? `<div class="alert alert-danger" style="margin-top:var(--sp-3);"><span>⚠</span><div><b>Risk aşkarlandı (bal: ${fraud.score})</b>Elan avtomatik olaraq əlavə moderasiya növbəsinə düşəcək.</div></div>`
+      : `<div class="alert alert-success" style="margin-top:var(--sp-3);"><span>✓</span><div>Avtomatik yoxlamadan keçdi. Standart moderasiya növbəsinə göndəriləcək.</div></div>`;
+    goStep(6);
+  });
+
+  document.querySelectorAll("[data-back]").forEach(b=> b.addEventListener("click", ()=> goStep(parseInt(b.dataset.back))));
+
+  document.getElementById("submit-listing").addEventListener("click", ()=>{
+    const res = createListing(listingData);
+    document.querySelectorAll(".step-panel").forEach(p=>p.style.display="none");
+    document.getElementById("ref-code").textContent = res.reference;
+    document.getElementById("success-panel").style.display="block";
+    document.getElementById("stepper").style.display="none";
+    icToast("Elan uğurla göndərildi", "success");
+  });
+</script>
+</body>
+</html>

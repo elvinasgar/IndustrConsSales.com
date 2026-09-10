@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Əmlak — IndustrCons Market</title>
+<meta name="description" content="Bakı və digər şəhərlərdə mənzil, həyət evi, villa, torpaq və kommersiya əmlakı elanları.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Əmlak</div>
+  <h1 style="font-size:1.9rem;">Əmlak elanları</h1>
+
+  <div class="chip-row" id="deal-chips" style="margin-bottom:var(--sp-5);">
+    <button class="chip active" data-deal="">Hamısı</button>
+    <button class="chip" data-deal="Satılır">Satılır</button>
+    <button class="chip" data-deal="Kirayə">Kirayə</button>
+    <button class="chip" data-deal="Günlük">Günlük</button>
+    <button class="chip" data-deal="new">Yeni layihələr</button>
+  </div>
+
+  <div class="layout-filters">
+    <aside class="filter-panel">
+      <div class="filter-group">
+        <h4>Kateqoriya</h4>
+        <label><input type="checkbox" class="cat-filter" value="Mənzil"> Mənzil</label>
+        <label><input type="checkbox" class="cat-filter" value="Həyət evi"> Həyət evi</label>
+        <label><input type="checkbox" class="cat-filter" value="Villa"> Villa</label>
+        <label><input type="checkbox" class="cat-filter" value="Torpaq"> Torpaq</label>
+        <label><input type="checkbox" class="cat-filter" value="Ofis"> Ofis</label>
+        <label><input type="checkbox" class="cat-filter" value="Mağaza"> Mağaza</label>
+        <label><input type="checkbox" class="cat-filter" value="Anbar"> Anbar</label>
+        <label><input type="checkbox" class="cat-filter" value="Sənaye əmlakı"> Sənaye əmlakı</label>
+      </div>
+      <div class="filter-group">
+        <h4>Lokasiya</h4>
+        <select id="loc-filter" style="width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+          <option value="">Bütün ərazilər</option>
+          <option>Bakı</option><option>Sumqayıt</option><option>Gəncə</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <h4>Qiymət (AZN)</h4>
+        <div class="filter-row">
+          <input type="number" id="price-min" placeholder="Min">
+          <input type="number" id="price-max" placeholder="Max">
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Sahə (m²)</h4>
+        <div class="filter-row">
+          <input type="number" id="area-min" placeholder="Min">
+          <input type="number" id="area-max" placeholder="Max">
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Otaq sayı</h4>
+        <div class="chip-row" id="room-chips">
+          <button class="chip" data-room="1">1</button>
+          <button class="chip" data-room="2">2</button>
+          <button class="chip" data-room="3">3</button>
+          <button class="chip" data-room="4">4+</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Təmir</h4>
+        <label><input type="checkbox" class="cond-filter" value="Təmirli"> Təmirli</label>
+        <label><input type="checkbox" class="cond-filter" value="Orta təmir"> Orta təmir</label>
+        <label><input type="checkbox" class="cond-filter" value="Təmirsiz"> Təmirsiz</label>
+      </div>
+      <div class="filter-group">
+        <h4>Sənəd</h4>
+        <label><input type="checkbox" id="doc-filter"> Yalnız çıxarışlı</label>
+        <h4 style="margin-top:var(--sp-3);">İpoteka</h4>
+        <label><input type="checkbox" id="mortgage-filter"> İpoteka mümkün</label>
+      </div>
+      <button class="btn btn-dark btn-block" id="apply-filters">Filtrlə</button>
+      <button class="btn btn-ghost btn-block" id="reset-filters" style="margin-top:6px;">Sıfırla</button>
+    </aside>
+
+    <div>
+      <div class="map-placeholder" style="margin-bottom:var(--sp-4);">🗺 Xəritə görünüşü — elanların yerləşdiyi ərazilər (prototip)</div>
+      <div class="toolbar">
+        <span class="muted" id="result-count">— elan tapıldı</span>
+        <div class="flex gap-2 items-center">
+          <select id="sort-select">
+            <option value="relevance">Uyğunluq</option>
+            <option value="cheap">Ucuzdan bahaya</option>
+            <option value="expensive">Bahadan ucuza</option>
+            <option value="newest">Ən yeni</option>
+            <option value="viewed">Ən çox baxılan</option>
+          </select>
+          <div class="view-toggle">
+            <button class="active" id="grid-view-btn">▦</button>
+            <button id="list-view-btn">☰</button>
+          </div>
+        </div>
+      </div>
+      <div class="grid" id="property-grid"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script>
+  let state = { deal:"", categories:[], location:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
+  const PAGE_SIZE = 8;
+
+  function readFilters(){
+    state.categories = [...document.querySelectorAll(".cat-filter:checked")].map(c=>c.value);
+    state.location = document.getElementById("loc-filter").value;
+    state.priceMin = parseFloat(document.getElementById("price-min").value) || null;
+    state.priceMax = parseFloat(document.getElementById("price-max").value) || null;
+    state.sort = document.getElementById("sort-select").value;
+    state.page = 1;
+  }
+
+  function applyAll(){
+    let list = [...IC_PROPERTY];
+    if(state.deal === "new") list = list.filter(i => i.title.includes("yeni tikili"));
+    else if(state.deal) list = list.filter(i => i.deal === state.deal);
+    if(state.categories.length) list = list.filter(i => state.categories.includes(i.category));
+    if(state.location) list = list.filter(i => i.city === state.location);
+    if(state.priceMin) list = list.filter(i => i.price >= state.priceMin);
+    if(state.priceMax) list = list.filter(i => i.price <= state.priceMax);
+
+    if(state.sort==="cheap") list.sort((a,b)=>a.price-b.price);
+    if(state.sort==="expensive") list.sort((a,b)=>b.price-a.price);
+    if(state.sort==="newest") list.sort((a,b)=>b.createdAt-a.createdAt);
+    if(state.sort==="viewed") list.sort((a,b)=>b.views-a.views);
+
+    document.getElementById("result-count").textContent = `${list.length} elan tapıldı`;
+    const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+    if(state.page > totalPages) state.page = totalPages;
+    const pageItems = list.slice((state.page-1)*PAGE_SIZE, state.page*PAGE_SIZE);
+    icRenderCards("property-grid", pageItems);
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages){
+    const el = document.getElementById("pagination");
+    if(totalPages<=1){ el.innerHTML=""; return; }
+    let html = "";
+    for(let p=1;p<=totalPages;p++){
+      html += `<button class="${p===state.page?'active':''}" data-page="${p}">${p}</button>`;
+    }
+    el.innerHTML = html;
+    el.querySelectorAll("button").forEach(b => b.addEventListener("click", ()=>{ state.page = parseInt(b.dataset.page); applyAll(); window.scrollTo({top:300,behavior:"smooth"}); }));
+  }
+
+  document.getElementById("deal-chips").addEventListener("click",(e)=>{
+    if(e.target.tagName !== "BUTTON") return;
+    document.querySelectorAll("#deal-chips .chip").forEach(c=>c.classList.remove("active"));
+    e.target.classList.add("active");
+    state.deal = e.target.dataset.deal;
+    state.page = 1;
+    applyAll();
+  });
+  document.getElementById("room-chips").addEventListener("click",(e)=>{
+    if(e.target.tagName !== "BUTTON") return;
+    e.target.classList.toggle("active");
+  });
+  document.getElementById("apply-filters").addEventListener("click", ()=>{ readFilters(); applyAll(); });
+  document.getElementById("reset-filters").addEventListener("click", ()=>{
+    document.querySelectorAll(".cat-filter, .cond-filter").forEach(c=>c.checked=false);
+    document.getElementById("loc-filter").value="";
+    document.getElementById("price-min").value=""; document.getElementById("price-max").value="";
+    document.getElementById("area-min").value=""; document.getElementById("area-max").value="";
+    document.getElementById("doc-filter").checked=false; document.getElementById("mortgage-filter").checked=false;
+    document.querySelectorAll("#room-chips .chip").forEach(c=>c.classList.remove("active"));
+    state = { deal:"", categories:[], location:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
+    document.getElementById("sort-select").value = "relevance";
+    document.querySelectorAll("#deal-chips .chip").forEach(c=>c.classList.remove("active"));
+    document.querySelector('#deal-chips .chip[data-deal=""]').classList.add("active");
+    applyAll();
+  });
+  document.getElementById("sort-select").addEventListener("change", ()=>{ state.sort = document.getElementById("sort-select").value; applyAll(); });
+  document.getElementById("grid-view-btn").addEventListener("click",(e)=>{
+    document.getElementById("property-grid").classList.remove("grid-3");
+    e.target.classList.add("active"); document.getElementById("list-view-btn").classList.remove("active");
+  });
+  document.getElementById("list-view-btn").addEventListener("click",(e)=>{
+    document.getElementById("property-grid").classList.add("grid-3");
+    e.target.classList.add("active"); document.getElementById("grid-view-btn").classList.remove("active");
+  });
+
+  applyAll();
+</script>
+</body>
+</html>
