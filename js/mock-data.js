@@ -1,5 +1,5 @@
 /* =========================================================
-   MOCK DATA — IndustrCons Market
+   MOCK DATA — IndustrCons Market Place
    In production this file disappears; the same shapes would
    arrive from GET /api/listings, GET /api/companies, etc.
    ========================================================= */
@@ -7,22 +7,39 @@
 const IC_LOCATIONS = ["Yasamal","Nərimanov","Nəsimi","Xətai","Səbail","Binəqədi","Suraxanı","Sabunçu","Sumqayıt","Gəncə","Xırdalan","Nizami"];
 
 /* ---------------- Location tree: city > rayon > qəsəbə/kənd ---------------- */
+/* Bakı: bütün 12 inzibati rayon daxil edilib. */
 const IC_LOCATION_TREE = {
   "Bakı": {
     "Yasamal": ["Yasamal qəsəbəsi","8-ci mikrorayon"],
     "Nərimanov": ["Böyükşor","Əhməd Rəcəbli ətrafı"],
     "Nəsimi": ["28 May ətrafı","Nizami küçəsi ətrafı"],
+    "Nizami": ["Keşlə qəsəbəsi","8-ci kilometr"],
     "Xətai": ["8-ci kilometr","Zabrat-2"],
+    "Xəzər": ["Novxanı","Bilgəh","Pirşağı","Zurxana"],
     "Səbail": ["İçərişəhər ətrafı","Bulvar ətrafı"],
     "Binəqədi": ["Binəqədi qəsəbəsi","Hövsan yolu"],
     "Suraxanı": ["Suraxanı qəsəbəsi","Hövsan qəsəbəsi"],
-    "Sabunçu": ["Sabunçu qəsəbəsi","Kürdəxanı qəsəbəsi","Maştağa qəsəbəsi","Bilgəh qəsəbəsi"],
-    "Nizami": ["Keşlə qəsəbəsi","8-ci kilometr"]
+    "Sabunçu": ["Sabunçu qəsəbəsi","Kürdəxanı qəsəbəsi","Maştağa qəsəbəsi"],
+    "Qaradağ": ["Ələt qəsəbəsi","Sanqaçal","Puta"],
+    "Pirallahı": ["Pirallahı qəsəbəsi","Çilov adası ətrafı"]
   },
   "Sumqayıt": { "Mərkəz": ["1-ci mikrorayon","2-ci mikrorayon","3-cü mikrorayon"] },
   "Gəncə": { "Mərkəz": ["Şəhər mərkəzi","Kəpəz rayonu"] }
 };
 const IC_METRO_STATIONS = ["28 May","Gənclik","Nizami","Elmlər Akademiyası","İnşaatçılar","Memar Əcəmi","Neftçilər","Xalqlar Dostluğu","Nəriman Nərimanov","Ulduz","Koroğlu","Bakmil","Azadlıq Prospekti","Dərnəgül","Cəfər Cabbarlı","Sahil","İçərişəhər","Xətai","Əhmədli","Qara Qarayev","Həzi Aslanov","Şah İsmayıl Xətai"];
+
+/* Azərbaycanın bütün şəhər və rayonları (ölkə üzrə geniş axtarış üçün). */
+const IC_ALL_AZ_REGIONS = [
+  "Bakı","Sumqayıt","Gəncə","Mingəçevir","Naftalan","Şirvan","Xankəndi","Lənkəran","Yevlax",
+  "Abşeron","Ağcabədi","Ağdam","Ağdaş","Ağstafa","Ağsu","Astara","Balakən","Beyləqan","Bərdə",
+  "Biləsuvar","Cəbrayıl","Cəlilabad","Daşkəsən","Füzuli","Gədəbəy","Goranboy","Göyçay","Göygöl",
+  "Hacıqabul","İmişli","İsmayıllı","Kəlbəcər","Kürdəmir","Qax","Qazax","Qəbələ","Qobustan","Quba",
+  "Qubadlı","Qusar","Laçın","Lerik","Masallı","Neftçala","Oğuz","Saatlı","Sabirabad","Salyan",
+  "Samux","Siyəzən","Şabran","Şamaxı","Şamkir","Şəki","Şuşa","Tərtər","Tovuz","Ucar","Xaçmaz",
+  "Xızı","Xocalı","Xocavənd","Yardımlı","Zaqatala","Zəngilan","Zərdab",
+  "Naxçıvan MR — Babək","Naxçıvan MR — Culfa","Naxçıvan MR — Kəngərli","Naxçıvan MR — Ordubad",
+  "Naxçıvan MR — Sədərək","Naxçıvan MR — Şahbuz","Naxçıvan MR — Şərur"
+];
 
 function icPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function icRand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
@@ -94,10 +111,14 @@ const mpCategories = [
   {group:"Alətlər", items:["Perforator Bosch","Diskli mişar","Boyaq pistoleti","Qaynaq aparatı","Kompressor"]},
   {group:"Nəqliyyat", items:["Mercedes Sprinter","Hyundai Porter","Yük qoşqusu","Ehtiyat hissələri"]},
   {group:"Geyim", items:["İş geyimi dəsti","Təhlükəsizlik ayaqqabısı","Baret dəsti","İş əlcəyi (10 ədəd)"]},
-  {group:"Uşaq aləmi", items:["Uşaq velosipedi","Uşaq arabası","Оyuncaq dəsti"]},
-  {group:"İdman", items:["İdman dəsti","Velosiped","Fitness aparatı"]},
+  {group:"Analar və Uşaqlar", items:["Uşaq velosipedi","Uşaq arabası","Oyuncaq dəsti","Uşaq geyimi","Uşaq mərkəzi"]},
+  {group:"İdman və Outdoor", items:["İdman dəsti","Velosiped","Fitness aparatı","Çadır (kempinq)","Fitnes trenajor"]},
   {group:"Bağ-bağça", items:["Bağ mebeli","Ot biçən maşın","Suvarma sistemi"]},
-  {group:"Heyvanlar", items:["Quş qəfəsi","İt evi","Heyvan daşıma qutusu"]}
+  {group:"Heyvanlar", items:["Quş qəfəsi","İt evi","Heyvan daşıma qutusu"]},
+  {group:"Kitab və Məktəb ləvazimatları", items:["Dərslik dəsti","Bədii ədəbiyyat","Elmi kitab","Məktəb çantası","Yazı ləvazimatı dəsti","Kalkulyator"]},
+  {group:"Gözəllik və Sağlamlıq", items:["Parfüm dəsti","Saç qurutma aparatı","Vitamin kompleksi","Masaj aparatı"]},
+  {group:"Ofis ləvazimatları", items:["Ofis stolu","Printer","Sənəd şkafı","Ofis kreslosu"]},
+  {group:"Musiqi və Hobbi", items:["Akustik gitara","Rəssamlıq dəsti","Fotoçəkiliş işıq dəsti","Model konstruktoru"]}
 ];
 const IC_MARKETPLACE = Array.from({length:20}).map((_,i)=>{
   const cat = icPick(mpCategories);
@@ -234,6 +255,40 @@ const IC_HOTELS = hotelNames.map((name,i)=>({
   amenities: ["Wi-Fi", "Səhər yeməyi", icPick(["Hovuz","Fitness","Spa","Parking"]), icPick(["Konfrans zalı","Bar","24/7 reception"])],
   image: icImg("hotel"+i, 640, 420),
   metro: icPick(IC_METRO_STATIONS)
+}));
+
+/* ---------------- JOBS / VACANCIES (14) ---------------- */
+const jobList = [
+  {title:"Tikinti sahə müdiri", cat:"Tikinti", exp:"5+ il", type:"Tam ştat"},
+  {title:"Ekskavator operatoru", cat:"Texnika", exp:"2+ il", type:"Tam ştat"},
+  {title:"Elektrik ustası", cat:"Tikinti", exp:"3+ il", type:"Tam ştat"},
+  {title:"Mülki mühəndis", cat:"Mühəndislik", exp:"3+ il", type:"Tam ştat"},
+  {title:"Sürücü (kateqoriya C)", cat:"Nəqliyyat", exp:"1+ il", type:"Tam ştat"},
+  {title:"Əmlak agenti", cat:"Satış", exp:"0-1 il", type:"Komissiya"},
+  {title:"Layihə meneceri (PM)", cat:"İdarəetmə", exp:"4+ il", type:"Tam ştat"},
+  {title:"Qaynaqçı", cat:"Tikinti", exp:"2+ il", type:"Tam ştat"},
+  {title:"HVAC texniki", cat:"Mühəndislik", exp:"2+ il", type:"Tam ştat"},
+  {title:"Geodeziya mühəndisi", cat:"Mühəndislik", exp:"3+ il", type:"Tam ştat"},
+  {title:"Anbar müdiri", cat:"Logistika", exp:"2+ il", type:"Tam ştat"},
+  {title:"Marketinq mütəxəssisi", cat:"Marketinq", exp:"1+ il", type:"Tam ştat"},
+  {title:"Təhlükəsizlik mühəndisi (HSE)", cat:"Mühəndislik", exp:"3+ il", type:"Tam ştat"},
+  {title:"Betonçu briqadası üzvü", cat:"Tikinti", exp:"0-1 il", type:"Gündəlik"}
+];
+const IC_JOBS = jobList.map((j,i)=>({
+  id: `J${700+i}`,
+  kind: "job",
+  title: j.title,
+  category: j.cat,
+  employmentType: j.type,
+  experience: j.exp,
+  salaryMin: icRand(500,1200),
+  salaryMax: icRand(1300,4500),
+  location: icPick(IC_LOCATIONS),
+  city: "Bakı",
+  company: icSeller(i+120),
+  premium: Math.random()>0.8,
+  createdAt: Date.now() - icRand(0,30)*86400000,
+  description: `${j.title} vəzifəsi üzrə komandamıza qatılacaq namizəd axtarırıq. Təcrübə: ${j.exp}. İş şəraiti və sosial paket müsahibədə müzakirə olunur.`
 }));
 
 /* ---------------- Combined index for global search ---------------- */

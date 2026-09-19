@@ -15,10 +15,12 @@ const ICON = {
 
 const NAV_LINKS = [
   {href:"index.html", label:"Home"},
+  {href:"categories.html", label:"Kateqoriyalar"},
   {href:"property.html", label:"Əmlak"},
   {href:"marketplace.html", label:"Marketplace"},
   {href:"equipment.html", label:"Texnika"},
   {href:"hotels.html", label:"Otellər"},
+  {href:"jobs.html", label:"Vakansiyalar"},
   {href:"services.html", label:"Xidmətlər"},
   {href:"companies.html", label:"Şirkətlər"},
 ];
@@ -26,10 +28,20 @@ const NAV_LINKS = [
 /* =========================================================
    CURRENCY — AZN is the stored base unit everywhere in mock
    data; the switcher only affects display formatting.
-   Rates are illustrative, not live market rates.
+   Rates are illustrative reference points, not live market
+   rates — refreshed occasionally, not real-time.
    ========================================================= */
-const IC_RATES = { AZN: 1, USD: 1/1.7, TRY: (1/1.7) * 34.2 };
-const IC_CURRENCY_SYMBOL = { AZN: "₼", USD: "$", TRY: "₺" };
+const IC_RATES = {
+  AZN: 1,
+  USD: 1/1.7,
+  EUR: 1/1.85,
+  TRY: (1/1.7) * 34.2,
+  GEL: (1/1.7) * 2.68,
+  RUB: (1/1.7) * 92,
+  GBP: 1/2.15,
+};
+const IC_CURRENCY_SYMBOL = { AZN: "₼", USD: "$", EUR: "€", TRY: "₺", GEL: "₾", RUB: "₽", GBP: "£" };
+const IC_CURRENCY_LABEL = { AZN: "AZN — Azərbaycan manatı", USD: "USD — ABŞ dolları", EUR: "EUR — Avro", TRY: "TRY — Türk lirəsi", GEL: "GEL — Gürcü larisi", RUB: "RUB — Rusiya rublu", GBP: "GBP — İngilis funtu" };
 
 function icGetCurrency(){ return localStorage.getItem("ic_currency") || "AZN"; }
 function icSetCurrency(cur){
@@ -108,7 +120,7 @@ function icRenderHeader(){
       <div class="container">
         <a href="index.html" class="brand">
           <span class="brand-mark">IC</span>
-          <span>INDUSTRCONS<span class="brand-sub">MARKET</span></span>
+          <span>INDUSTRCONS<span class="brand-sub">MARKET PLACE</span></span>
         </a>
         <nav class="main-nav">${navHtml}</nav>
         <div class="header-search">
@@ -116,10 +128,8 @@ function icRenderHeader(){
           <input type="text" id="global-search-input" placeholder="Nə axtarırsınız?" />
         </div>
         <div class="header-actions">
-          <select id="currency-select" class="lang-select" title="Valyuta">
-            <option value="AZN">AZN ₼</option>
-            <option value="USD">USD $</option>
-            <option value="TRY">TRY ₺</option>
+          <select id="currency-select" class="lang-select" title="Valyuta məzənnəsi">
+            ${Object.keys(IC_RATES).map(c=>`<option value="${c}">${c} ${IC_CURRENCY_SYMBOL[c]}</option>`).join("")}
           </select>
           <a href="favorites.html" class="icon-btn" title="Favorites">${ICON.heart}</a>
           <a href="messages.html" class="icon-btn" title="Messages">${ICON.msg}</a>
@@ -136,7 +146,6 @@ function icRenderHeader(){
         <button class="close-drawer" id="drawer-close">&times;</button>
         <div style="clear:both;height:8px;"></div>
         ${NAV_LINKS.map(l=>`<a href="${l.href}">${l.label}</a>`).join("")}
-        <a href="companies.html">Şirkətlər</a>
         <a href="pricing.html">Qiymətlər</a>
         <a href="security.html">Təhlükəsizlik Mərkəzi</a>
         <a href="rules.html">Qaydalar</a>
@@ -183,11 +192,11 @@ function icRenderFooter(){
       <div class="container">
         <div class="footer-grid">
           <div>
-            <div class="brand" style="margin-bottom:12px;"><span class="brand-mark">IC</span><span>INDUSTRCONS<span class="brand-sub">MARKET</span></span></div>
+            <div class="brand" style="margin-bottom:12px;"><span class="brand-mark">IC</span><span>INDUSTRCONS<span class="brand-sub">MARKET PLACE</span></span></div>
             <p style="color:#9CA1AA;font-size:0.85rem;max-width:280px;">Əmlak, məhsul, texnika və xidmətləri bir platformada birləşdirən Azərbaycanın yeni nəsil bazarı.</p>
           </div>
           <div><h4>Kateqoriyalar</h4>
-            <a href="property.html">Əmlak</a><a href="marketplace.html">Marketplace</a><a href="equipment.html">Texnika</a><a href="services.html">Xidmətlər</a><a href="companies.html">Şirkətlər</a>
+            <a href="categories.html">Bütün kateqoriyalar</a><a href="property.html">Əmlak</a><a href="marketplace.html">Marketplace</a><a href="equipment.html">Texnika</a><a href="jobs.html">Vakansiyalar</a><a href="services.html">Xidmətlər</a><a href="companies.html">Şirkətlər</a>
           </div>
           <div><h4>Platform</h4>
             <a href="pricing.html">Qiymətlər</a><a href="post-listing.html">Elan yerləşdir</a><a href="dashboard.html">Kabinetim</a><a href="search.html">Axtarış</a>
@@ -200,7 +209,11 @@ function icRenderFooter(){
           </div>
         </div>
         <div class="footer-bottom">
-          <span>© 2026 IndustrCons Market. Bütün hüquqlar qorunur. Prototip versiya.</span>
+          <span>© 2026 IndustrCons Market Place. Bütün hüquqlar qorunur. Prototip versiya.</span>
+          <div class="flex items-center gap-2">
+            <span class="muted" style="font-size:0.78rem;">Powered by</span>
+            <img src="assets/industrcons-logo.jpg" alt="IndustrCONS" style="height:26px;border-radius:3px;">
+          </div>
           <select class="lang-select"><option>AZ</option><option>EN</option><option>RU</option></select>
         </div>
       </div>
@@ -316,4 +329,160 @@ function icQueryParam(name){
 document.addEventListener("DOMContentLoaded", ()=>{
   icRenderHeader();
   icRenderFooter();
+  icInitScrollReveal();
 });
+
+/* =========================================================
+   SLOW-MOTION REVEAL — subtle fade/rise-in as sections enter
+   view. Add class="reveal" to any element to opt in.
+   ========================================================= */
+function icInitScrollReveal(){
+  const els = document.querySelectorAll(".reveal, .card, .cat-card");
+  if(!("IntersectionObserver" in window) || !els.length) return;
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add("in-view"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+  els.forEach((el,i)=>{
+    el.classList.add("reveal");
+    el.style.transitionDelay = `${Math.min(i%8 * 45, 300)}ms`;
+    io.observe(el);
+  });
+}
+
+/* =========================================================
+   AI-ASSIST (template-based simulation) — mirrors the fraud
+   scanner: this is a frontend simulation only. In production
+   swap the body for a call to POST /api/ai/generate-text with
+   the same inputs.
+   ========================================================= */
+function icGenerateJobDescription({ title, category, exp, type }){
+  title = title || "Vakansiya";
+  category = category || "Ümumi";
+  exp = exp || "Təcrübə tələb olunmur";
+  type = type || "Tam ştat";
+  return `${title} vəzifəsi üzrə komandamıza güclü namizəd axtarırıq.
+
+Vəzifə öhdəlikləri:
+— Gündəlik iş proseslərinin ${category.toLowerCase()} sahəsi üzrə keyfiyyətli icrası
+— Komanda ilə əlaqəli işləmək və hesabatlılıq
+— Təhlükəsizlik və keyfiyyət standartlarına riayət
+
+Namizədə tələblər:
+— Təcrübə: ${exp}
+— Məsuliyyətli, komanda ilə işləmə bacarığı
+— ${type} iş rejiminə uyğunluq
+
+Təklif etdiklərimiz:
+— Rəqabətqabiliyyətli əməkhaqqı
+— Sabit iş şəraiti və inkişaf imkanı
+
+Müraciət üçün CV-nizi göndərin.`;
+}
+function icGenerateListingDescription({ title, category, condition }){
+  title = title || "Məhsul";
+  category = category || "";
+  condition = condition || "yaxşı";
+  return `${title} satılır. Məhsul ${condition} vəziyyətdədir${category ? `, ${category.toLowerCase()} kateqoriyasına aiddir` : ""}. Ətraflı məlumat və baxış üçün satıcı ilə əlaqə saxlayın. Qiymət danışıq yolu ilə razılaşdırıla bilər.`;
+}
+
+/* =========================================================
+   AI PRICE ANALYSIS (differentiator) — compares one listing's
+   price against the average of similar-category listings.
+   Frontend simulation using the mock dataset; production would
+   call GET /api/ai/price-estimate?category=&area=&city=
+   ========================================================= */
+function icEstimateFairPrice(item, pool){
+  const price = item.price ?? item.salePrice ?? 0;
+  const peers = pool.filter(p => p.id !== item.id && p.category === item.category);
+  if(!peers.length || !price) return null;
+  const avg = peers.reduce((s,p)=> s + (p.price ?? p.salePrice ?? 0), 0) / peers.length;
+  const diffPct = Math.round(((price - avg) / avg) * 100);
+  let verdict = "orta bazar səviyyəsindədir";
+  if(diffPct <= -12) verdict = "bazar ortalamasından nəzərəçarpacaq dərəcədə ucuzdur";
+  else if(diffPct < -3) verdict = "bazar ortalamasından bir qədər ucuzdur";
+  else if(diffPct > 12) verdict = "bazar ortalamasından nəzərəçarpacaq dərəcədə bahadır";
+  else if(diffPct > 3) verdict = "bazar ortalamasından bir qədər bahadır";
+  return { avg, diffPct, verdict, sampleSize: peers.length };
+}
+
+/* =========================================================
+   CO-PILOT — floating assistant panel with canned, keyword-
+   matched suggestions. Frontend simulation; production would
+   wire the send button to POST /api/ai/copilot.
+   ========================================================= */
+function icRenderCopilot(context="listing"){
+  if(document.getElementById("copilot-launcher")) return;
+  const launcher = document.createElement("button");
+  launcher.id = "copilot-launcher";
+  launcher.className = "copilot-launcher";
+  launcher.innerHTML = "🤖";
+  launcher.title = "IndustrCons Co-Pilot";
+  document.body.appendChild(launcher);
+
+  const panel = document.createElement("div");
+  panel.id = "copilot-panel";
+  panel.className = "copilot-panel";
+  panel.innerHTML = `
+    <div class="copilot-head">
+      <span>🤖 IndustrCons Co-Pilot</span>
+      <button id="copilot-close">&times;</button>
+    </div>
+    <div class="copilot-body" id="copilot-body">
+      <div class="copilot-msg bot">Salam! Elanınızı və ya vakansiyanızı daha güclü etmək üçün buradayam. Nə ilə köməklik edim?</div>
+    </div>
+    <div class="copilot-quick">
+      <button data-q="qiymet">Qiyməti necə tənzimləyim?</button>
+      <button data-q="tesvir">Təsviri yaxşılaşdır</button>
+      <button data-q="foto">Şəkil məsləhəti</button>
+    </div>
+    <div class="copilot-input">
+      <input type="text" id="copilot-text" placeholder="Sualınızı yazın...">
+      <button id="copilot-send">➤</button>
+    </div>
+  `;
+  document.body.appendChild(panel);
+
+  const answers = {
+    qiymet: "Oxşar elanlara baxın: qiymətinizi bölgədəki orta bazar dəyərinin ±10%-i aralığında saxlamaq daha çox baxış gətirir.",
+    tesvir: "Təsvirdə ölçü, il, vəziyyət və çatdırılma şərtlərini konkret yazın — qısa və konkret elanlar daha çox etibar qazanır.",
+    foto: "Gün işığında, fonu təmiz saxlayaraq minimum 4 şəkil əlavə edin — birinci şəkil ən aydın olmalıdır.",
+  };
+  function botReply(text){
+    const body = document.getElementById("copilot-body");
+    const div = document.createElement("div");
+    div.className = "copilot-msg bot";
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+  function userMsg(text){
+    const body = document.getElementById("copilot-body");
+    const div = document.createElement("div");
+    div.className = "copilot-msg user";
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+  launcher.addEventListener("click", ()=> panel.classList.toggle("open"));
+  document.getElementById("copilot-close").addEventListener("click", ()=> panel.classList.remove("open"));
+  panel.querySelectorAll(".copilot-quick button").forEach(b=>{
+    b.addEventListener("click", ()=>{ userMsg(b.textContent); setTimeout(()=>botReply(answers[b.dataset.q]), 400); });
+  });
+  function send(){
+    const input = document.getElementById("copilot-text");
+    const val = input.value.trim();
+    if(!val) return;
+    userMsg(val);
+    input.value = "";
+    const lower = val.toLowerCase();
+    let reply = "Bu barədə moderasiya komandamızla əlaqə saxlaya bilərsiniz. Ümumi tövsiyə: elanınızı konkret, düzgün kateqoriyalı və şəffaf qiymətli saxlayın.";
+    if(lower.includes("qiymət")||lower.includes("qiymet")) reply = answers.qiymet;
+    else if(lower.includes("şəkil")||lower.includes("foto")) reply = answers.foto;
+    else if(lower.includes("təsvir")) reply = answers.tesvir;
+    setTimeout(()=>botReply(reply), 400);
+  }
+  document.getElementById("copilot-send").addEventListener("click", send);
+  document.getElementById("copilot-text").addEventListener("keydown",(e)=>{ if(e.key==="Enter") send(); });
+}
