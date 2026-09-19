@@ -6,6 +6,24 @@
 
 const IC_LOCATIONS = ["Yasamal","Nərimanov","Nəsimi","Xətai","Səbail","Binəqədi","Suraxanı","Sabunçu","Sumqayıt","Gəncə","Xırdalan","Nizami"];
 
+/* ---------------- Location tree: city > rayon > qəsəbə/kənd ---------------- */
+const IC_LOCATION_TREE = {
+  "Bakı": {
+    "Yasamal": ["Yasamal qəsəbəsi","8-ci mikrorayon"],
+    "Nərimanov": ["Böyükşor","Əhməd Rəcəbli ətrafı"],
+    "Nəsimi": ["28 May ətrafı","Nizami küçəsi ətrafı"],
+    "Xətai": ["8-ci kilometr","Zabrat-2"],
+    "Səbail": ["İçərişəhər ətrafı","Bulvar ətrafı"],
+    "Binəqədi": ["Binəqədi qəsəbəsi","Hövsan yolu"],
+    "Suraxanı": ["Suraxanı qəsəbəsi","Hövsan qəsəbəsi"],
+    "Sabunçu": ["Sabunçu qəsəbəsi","Kürdəxanı qəsəbəsi","Maştağa qəsəbəsi","Bilgəh qəsəbəsi"],
+    "Nizami": ["Keşlə qəsəbəsi","8-ci kilometr"]
+  },
+  "Sumqayıt": { "Mərkəz": ["1-ci mikrorayon","2-ci mikrorayon","3-cü mikrorayon"] },
+  "Gəncə": { "Mərkəz": ["Şəhər mərkəzi","Kəpəz rayonu"] }
+};
+const IC_METRO_STATIONS = ["28 May","Gənclik","Nizami","Elmlər Akademiyası","İnşaatçılar","Memar Əcəmi","Neftçilər","Xalqlar Dostluğu","Nəriman Nərimanov","Ulduz","Koroğlu","Bakmil","Azadlıq Prospekti","Dərnəgül","Cəfər Cabbarlı","Sahil","İçərişəhər","Xətai","Əhmədli","Qara Qarayev","Həzi Aslanov","Şah İsmayıl Xətai"];
+
 function icPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function icRand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
 function icImg(seed,w=640,h=480){ return `https://picsum.photos/seed/${seed}/${w}/${h}`; }
@@ -74,7 +92,12 @@ const mpCategories = [
   {group:"Ev əşyaları", items:["Divan dəsti","Yataq otağı mebeli","Soyuducu","Paltaryuyan maşın","Mətbəx dəsti","İşıqlandırma"]},
   {group:"Tikinti materialları", items:["Kərpic (palet)","Sement (50kg kisə)","Metal profil","Qum-çınqıl","İzolyasiya materialı"]},
   {group:"Alətlər", items:["Perforator Bosch","Diskli mişar","Boyaq pistoleti","Qaynaq aparatı","Kompressor"]},
-  {group:"Nəqliyyat", items:["Mercedes Sprinter","Hyundai Porter","Yük qoşqusu","Ehtiyat hissələri"]}
+  {group:"Nəqliyyat", items:["Mercedes Sprinter","Hyundai Porter","Yük qoşqusu","Ehtiyat hissələri"]},
+  {group:"Geyim", items:["İş geyimi dəsti","Təhlükəsizlik ayaqqabısı","Baret dəsti","İş əlcəyi (10 ədəd)"]},
+  {group:"Uşaq aləmi", items:["Uşaq velosipedi","Uşaq arabası","Оyuncaq dəsti"]},
+  {group:"İdman", items:["İdman dəsti","Velosiped","Fitness aparatı"]},
+  {group:"Bağ-bağça", items:["Bağ mebeli","Ot biçən maşın","Suvarma sistemi"]},
+  {group:"Heyvanlar", items:["Quş qəfəsi","İt evi","Heyvan daşıma qutusu"]}
 ];
 const IC_MARKETPLACE = Array.from({length:20}).map((_,i)=>{
   const cat = icPick(mpCategories);
@@ -194,6 +217,23 @@ const IC_COMPANIES = companyNames.map((name,i)=>({
   logo: icImg("logo"+i, 200,200),
   cover: icImg("cover"+i, 900, 300),
   about: `${name} Azərbaycan bazarında illərdir fəaliyyət göstərən etibarlı şirkətdir. Keyfiyyət və şəffaflıq əsas prinsiplərimizdir.`
+}));
+
+/* ---------------- HOTELS / DAILY STAYS (Trivago-style tab, 12) ---------------- */
+const hotelNames = ["Boulevard Hotel Baku","Old City Inn","Flame Towers Residence","Caspian Business Hotel","Nizami Suites","Sea Breeze Aparthotel","Icheri Sheher Boutique","Ganjlik Park Hotel","Absheron Resort","Qafqaz Baku City","Sumqayit Business Inn","Ganja Garden Hotel"];
+const IC_HOTELS = hotelNames.map((name,i)=>({
+  id: `H${600+i}`,
+  kind: "hotel",
+  name,
+  city: i>=10 ? (i===10?"Sumqayıt":"Gəncə") : "Bakı",
+  district: icPick(IC_LOCATIONS),
+  stars: icRand(3,5),
+  rating: (7.2+Math.random()*2.3).toFixed(1),
+  reviews: icRand(20,1400),
+  pricePerNight: icRand(60,420),
+  amenities: ["Wi-Fi", "Səhər yeməyi", icPick(["Hovuz","Fitness","Spa","Parking"]), icPick(["Konfrans zalı","Bar","24/7 reception"])],
+  image: icImg("hotel"+i, 640, 420),
+  metro: icPick(IC_METRO_STATIONS)
 }));
 
 /* ---------------- Combined index for global search ---------------- */

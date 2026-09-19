@@ -41,4 +41,3 @@ function reportListing(listingId, reason){
   const ref = `RPT-${20000 + icRand(1,9999)}`;
   return { ok: true, reference: ref };
 }
-

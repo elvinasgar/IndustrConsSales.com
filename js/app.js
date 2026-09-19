@@ -18,9 +18,83 @@ const NAV_LINKS = [
   {href:"property.html", label:"Əmlak"},
   {href:"marketplace.html", label:"Marketplace"},
   {href:"equipment.html", label:"Texnika"},
+  {href:"hotels.html", label:"Otellər"},
   {href:"services.html", label:"Xidmətlər"},
   {href:"companies.html", label:"Şirkətlər"},
 ];
+
+/* =========================================================
+   CURRENCY — AZN is the stored base unit everywhere in mock
+   data; the switcher only affects display formatting.
+   Rates are illustrative, not live market rates.
+   ========================================================= */
+const IC_RATES = { AZN: 1, USD: 1/1.7, TRY: (1/1.7) * 34.2 };
+const IC_CURRENCY_SYMBOL = { AZN: "₼", USD: "$", TRY: "₺" };
+
+function icGetCurrency(){ return localStorage.getItem("ic_currency") || "AZN"; }
+function icSetCurrency(cur){
+  localStorage.setItem("ic_currency", cur);
+  window.dispatchEvent(new CustomEvent("ic-currency-changed"));
+}
+function icMoney(amountAZN, suffix=""){
+  const cur = icGetCurrency();
+  const val = Math.round((amountAZN || 0) * IC_RATES[cur]);
+  return `${icPrice(val)} ${IC_CURRENCY_SYMBOL[cur]}${suffix}`;
+}
+function icPriceUnitSuffix(unit){
+  if(!unit) return "";
+  if(unit.includes("/ay")) return "/ay";
+  if(unit.includes("/gün")) return "/gün";
+  return "";
+}
+window.addEventListener("ic-currency-changed", ()=>{
+  const sel = document.getElementById("currency-select");
+  if(sel) sel.value = icGetCurrency();
+  if(typeof window.icRerender === "function") window.icRerender();
+});
+
+/* =========================================================
+   LOCATION PICKER — city > rayon > qəsəbə/kənd cascade,
+   plus nearest metro and a manual street field.
+   ========================================================= */
+function icLocationPickerHTML(prefix){
+  const cities = Object.keys(IC_LOCATION_TREE);
+  return `
+    <div class="filter-row" style="flex-direction:column;gap:8px;">
+      <select id="${prefix}-city">${cities.map(c=>`<option>${c}</option>`).join("")}</select>
+      <select id="${prefix}-district"></select>
+      <select id="${prefix}-settlement"></select>
+      <input type="text" id="${prefix}-street" placeholder="Küçə adı (manual)">
+      <select id="${prefix}-metro"><option value="">Yaxın metro (istəyə bağlı)</option>${IC_METRO_STATIONS.map(m=>`<option>${m}</option>`).join("")}</select>
+    </div>`;
+}
+function icWireLocationPicker(prefix){
+  const citySel = document.getElementById(`${prefix}-city`);
+  const distSel = document.getElementById(`${prefix}-district`);
+  const settleSel = document.getElementById(`${prefix}-settlement`);
+  if(!citySel) return;
+  function fillDistricts(){
+    const districts = Object.keys(IC_LOCATION_TREE[citySel.value] || {});
+    distSel.innerHTML = districts.map(d=>`<option>${d}</option>`).join("");
+    fillSettlements();
+  }
+  function fillSettlements(){
+    const settlements = (IC_LOCATION_TREE[citySel.value] || {})[distSel.value] || [];
+    settleSel.innerHTML = `<option value="">Qəsəbə/kənd seçin</option>` + settlements.map(s=>`<option>${s}</option>`).join("");
+  }
+  citySel.addEventListener("change", fillDistricts);
+  distSel.addEventListener("change", fillSettlements);
+  fillDistricts();
+}
+function icLocationPickerValue(prefix){
+  return {
+    city: document.getElementById(`${prefix}-city`)?.value || "",
+    district: document.getElementById(`${prefix}-district`)?.value || "",
+    settlement: document.getElementById(`${prefix}-settlement`)?.value || "",
+    street: document.getElementById(`${prefix}-street`)?.value || "",
+    metro: document.getElementById(`${prefix}-metro`)?.value || "",
+  };
+}
 
 function icCurrentPage(){ return location.pathname.split("/").pop() || "index.html"; }
 
@@ -42,6 +116,11 @@ function icRenderHeader(){
           <input type="text" id="global-search-input" placeholder="Nə axtarırsınız?" />
         </div>
         <div class="header-actions">
+          <select id="currency-select" class="lang-select" title="Valyuta">
+            <option value="AZN">AZN ₼</option>
+            <option value="USD">USD $</option>
+            <option value="TRY">TRY ₺</option>
+          </select>
           <a href="favorites.html" class="icon-btn" title="Favorites">${ICON.heart}</a>
           <a href="messages.html" class="icon-btn" title="Messages">${ICON.msg}</a>
           <a href="#" class="icon-btn" id="notif-btn" title="Notifications">${ICON.bell}<span class="badge-dot"></span></a>
@@ -72,6 +151,10 @@ function icRenderHeader(){
       <a href="dashboard.html" class="${page==='dashboard.html'?'active':''}">${ICON.user}Profil</a>
     </nav>
   `;
+
+  const curSel = document.getElementById("currency-select");
+  curSel.value = icGetCurrency();
+  curSel.addEventListener("change", ()=> icSetCurrency(curSel.value));
 
   const hb = document.getElementById("hamburger-btn");
   const drawer = document.getElementById("mobile-drawer");
@@ -175,17 +258,17 @@ function icListingCard(item){
 
   if(item.kind === "property"){
     detailHref = `property-detail.html?id=${item.id}`;
-    priceLine = `${icPrice(item.price)} ${item.priceUnit}`;
+    priceLine = icMoney(item.price, ` ${icPriceUnitSuffix(item.priceUnit)}`.trimEnd());
     metaLine = `${item.area} m²${item.rooms ? ` · ${item.rooms} otaq` : ""}`;
     badgeExtra = `<span class="tag ${item.deal==='Kirayə'||item.deal==='Günlük'?'tag-rent':'tag-new'}">${item.deal}</span>`;
   } else if(item.kind === "marketplace"){
     detailHref = `product-detail.html?id=${item.id}`;
-    priceLine = `${icPrice(item.price)} ${item.priceUnit}`;
+    priceLine = icMoney(item.price);
     metaLine = item.category;
     badgeExtra = `<span class="tag ${item.status==='Yeni'?'tag-new':'tag-used'}">${item.status}</span>`;
   } else if(item.kind === "equipment"){
     detailHref = `product-detail.html?id=${item.id}`;
-    priceLine = item.forSale ? `${icPrice(item.salePrice)} AZN` : `${icPrice(item.rentPrice)} ${item.rentUnit}`;
+    priceLine = item.forSale ? icMoney(item.salePrice) : icMoney(item.rentPrice, " /gün");
     metaLine = `${item.year} · ${item.fuel}${item.drive ? " · "+item.drive : ""}`;
     badgeExtra = item.forRent ? `<span class="tag tag-rent">İcarə</span>` : `<span class="tag tag-new">Satılır</span>`;
   }
