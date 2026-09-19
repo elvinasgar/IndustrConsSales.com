@@ -418,3 +418,47 @@ button{ font-family: inherit; cursor: pointer; }
 .breadcrumb{ font-size: 0.82rem; color: var(--ink-soft); margin-bottom: var(--sp-3); }
 .breadcrumb a:hover{ color: var(--ink); text-decoration: underline; }
 .map-placeholder{ background: repeating-linear-gradient(45deg,#E3E1DA 0 10px,#EFEEEA 10px 20px); border:1px solid var(--border); border-radius: var(--radius-md); height: 220px; display:flex; align-items:center; justify-content:center; color: var(--ink-soft); font-size: 0.85rem; }
+
+/* ---------------- Slow-motion reveal ---------------- */
+.reveal{ opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in-view{ opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; transition:none; } }
+
+/* ---------------- Co-Pilot assistant widget ---------------- */
+.copilot-launcher{
+  position: fixed; bottom: 88px; right: 22px; z-index: 260;
+  width: 56px; height: 56px; border-radius: 50%; border: none;
+  background: var(--ink); color:#fff; font-size: 1.5rem; box-shadow: 0 8px 22px rgba(0,0,0,.3);
+}
+@media (max-width: 1024px){ .copilot-launcher{ bottom: 76px; } }
+.copilot-panel{
+  position: fixed; bottom: 152px; right: 22px; z-index: 260; width: 320px; max-width: calc(100vw - 32px);
+  background:#fff; border-radius: var(--radius-md); box-shadow: 0 16px 40px rgba(0,0,0,.25);
+  display:none; flex-direction: column; overflow:hidden; border:1px solid var(--border);
+}
+.copilot-panel.open{ display:flex; }
+.copilot-head{ background: var(--ink); color:#fff; padding: 12px 14px; display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:0.9rem; }
+.copilot-head button{ background:none; border:none; color:#fff; font-size:1.3rem; }
+.copilot-body{ padding: 12px; max-height: 260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; background: var(--concrete-100); }
+.copilot-msg{ padding: 9px 12px; border-radius: 10px; font-size: 0.85rem; max-width: 85%; }
+.copilot-msg.bot{ background:#fff; border:1px solid var(--border); align-self:flex-start; }
+.copilot-msg.user{ background: var(--signal); color:#fff; align-self:flex-end; }
+.copilot-quick{ display:flex; gap:6px; padding: 8px 10px; flex-wrap:wrap; border-top:1px solid var(--border); }
+.copilot-quick button{ font-size: 0.74rem; padding: 6px 10px; border-radius: 14px; border:1px solid var(--border); background:#fff; }
+.copilot-input{ display:flex; border-top:1px solid var(--border); }
+.copilot-input input{ flex:1; border:none; padding: 11px 12px; font-size:0.85rem; }
+.copilot-input button{ background: var(--ink); color:#fff; border:none; width:44px; }
+
+/* ---------------- Mega category menu ---------------- */
+.mega-cat-group{ background:#fff; border:1px solid var(--border); border-radius: var(--radius-md); padding: var(--sp-4); }
+.mega-cat-group h3{ font-size: 1rem; margin-bottom: var(--sp-2); }
+.mega-cat-group a{ display:block; padding: 6px 0; font-size: 0.87rem; color: var(--ink-soft); }
+.mega-cat-group a:hover{ color: var(--signal); }
+
+/* ---------------- Comparison table ---------------- */
+.compare-table{ width:100%; border-collapse: collapse; background:#fff; border:1px solid var(--border); border-radius: var(--radius-md); overflow:hidden; }
+.compare-table th, .compare-table td{ padding: 12px 14px; border-bottom:1px solid var(--concrete-100); font-size:0.85rem; text-align:center; }
+.compare-table th{ background: var(--ink); color:#fff; font-size:0.8rem; }
+.compare-table td:first-child, .compare-table th:first-child{ text-align:left; font-weight:600; }
+.compare-table .yes{ color: var(--success); font-weight:700; }
+.compare-table .no{ color: var(--ink-soft); }
