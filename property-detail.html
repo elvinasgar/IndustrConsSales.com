@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="page-title">Elan — IndustrCons Market</title>
+<title id="page-title">Elan — IndustrCons Market Place</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -44,6 +44,8 @@
       <div class="seller-card" id="seller-card"></div>
       <div style="height:var(--sp-3);"></div>
       <div class="trust-score" id="trust-mini"></div>
+      <div style="height:var(--sp-3);"></div>
+      <div class="trust-score" id="price-ai" style="display:none;"></div>
     </aside>
   </div>
 
@@ -80,7 +82,7 @@
   const id = icQueryParam("id") || IC_PROPERTY[0].id;
   const item = findListingById(id) || IC_PROPERTY[0];
 
-  document.getElementById("page-title").textContent = `${item.title} — IndustrCons Market`;
+  document.getElementById("page-title").textContent = `${item.title} — IndustrCons Market Place`;
   document.getElementById("crumb-title").textContent = item.title;
   document.getElementById("detail-title").textContent = item.title;
   document.getElementById("detail-loc").textContent = `📍 ${item.location}, ${item.city}`;
@@ -145,6 +147,19 @@
   `;
 
   icRenderCards("related-grid", IC_PROPERTY.filter(p=>p.id!==item.id && p.category===item.category).slice(0,4));
+
+  const priceAI = icEstimateFairPrice(item, IC_PROPERTY);
+  function renderPriceAI(){
+    if(!priceAI) return;
+    document.getElementById("price-ai").style.display = "block";
+    document.getElementById("price-ai").innerHTML = `
+      <h4 style="margin-bottom:4px;">✨ AI QİYMƏT ANALİZİ</h4>
+      <p style="margin:0 0 6px;font-size:0.85rem;">Bu elan oxşar ${priceAI.sampleSize} elanla müqayisədə <b>${priceAI.verdict}</b> (${priceAI.diffPct>0?'+':''}${priceAI.diffPct}%).</p>
+      <div class="disclaimer">Bazar ortalaması: ${icMoney(priceAI.avg)}. Bu, avtomatlaşdırılmış müqayisədir — real qiymətləndirmə deyil.</div>
+    `;
+  }
+  renderPriceAI();
+  window.icRerender = ()=>{ renderPrice(); renderPriceAI(); };
 
   document.getElementById("report-btn").addEventListener("click", ()=> document.getElementById("report-modal").classList.add("open"));
   document.getElementById("close-report").addEventListener("click", ()=> document.getElementById("report-modal").classList.remove("open"));

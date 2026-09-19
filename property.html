@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Əmlak — IndustrCons Market</title>
+<title>Əmlak — IndustrCons Market Place</title>
 <meta name="description" content="Bakı və digər şəhərlərdə mənzil, həyət evi, villa, torpaq və kommersiya əmlakı elanları.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,6 +40,12 @@
       <div class="filter-group">
         <h4>Lokasiya</h4>
         <div id="loc-picker-slot"></div>
+        <div style="margin-top:10px;">
+          <label style="font-weight:600;font-size:0.85rem;">və ya bütün Azərbaycan üzrə:</label>
+          <select id="all-az-region" style="width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:4px;">
+            <option value="">Bölgə seçin...</option>
+          </select>
+        </div>
       </div>
       <div class="filter-group">
         <h4>Qiymət (AZN)</h4>
@@ -113,11 +119,19 @@
 <script src="js/app.js"></script>
 <script src="js/listings.js"></script>
 <script>
-  let state = { deal:"", categories:[], location:"", rayon:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
+  let state = { deal:"", categories:[], location:"", rayon:"", wholeCountryRegion:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
   const PAGE_SIZE = 8;
 
   document.getElementById("loc-picker-slot").innerHTML = icLocationPickerHTML("prop-loc");
   icWireLocationPicker("prop-loc");
+
+  document.getElementById("all-az-region").innerHTML += IC_ALL_AZ_REGIONS.map(r=>`<option>${r}</option>`).join("");
+  document.getElementById("all-az-region").addEventListener("change",(e)=>{
+    state.location = ""; state.rayon = "";
+    state.wholeCountryRegion = e.target.value;
+    state.page = 1;
+    applyAll();
+  });
 
   document.getElementById("rayon-map-chips").innerHTML = Object.keys(IC_LOCATION_TREE["Bakı"]).map(r=>`<button class="chip" data-rayon="${r}">${r}</button>`).join("");
   document.getElementById("rayon-map-chips").addEventListener("click",(e)=>{
@@ -148,6 +162,7 @@
     if(state.categories.length) list = list.filter(i => state.categories.includes(i.category));
     if(state.location) list = list.filter(i => i.city === state.location);
     if(state.rayon) list = list.filter(i => i.location === state.rayon);
+    if(state.wholeCountryRegion) list = list.filter(i => i.city === state.wholeCountryRegion || i.location === state.wholeCountryRegion);
     if(state.priceMin) list = list.filter(i => i.price >= state.priceMin);
     if(state.priceMax) list = list.filter(i => i.price <= state.priceMax);
 
@@ -194,8 +209,9 @@
     document.getElementById("area-min").value=""; document.getElementById("area-max").value="";
     document.getElementById("doc-filter").checked=false; document.getElementById("mortgage-filter").checked=false;
     document.querySelectorAll("#room-chips .chip, #rayon-map-chips .chip").forEach(c=>c.classList.remove("active"));
-    state = { deal:"", categories:[], location:"", rayon:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
+    state = { deal:"", categories:[], location:"", rayon:"", wholeCountryRegion:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
     document.getElementById("sort-select").value = "relevance";
+    document.getElementById("all-az-region").value = "";
     document.querySelectorAll("#deal-chips .chip").forEach(c=>c.classList.remove("active"));
     document.querySelector('#deal-chips .chip[data-deal=""]').classList.add("active");
     applyAll();

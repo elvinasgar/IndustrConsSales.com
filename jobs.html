@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vakansiyalar — IndustrCons Market Place</title>
+<meta name="description" content="Tikinti, mühəndislik, nəqliyyat və digər sahələr üzrə vakansiyalar. Elan yerləşdirin, AI köməyi ilə mətn hazırlayın.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Vakansiyalar</div>
+  <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:var(--sp-2);">
+    <h1 style="font-size:1.8rem;margin:0;">Vakansiyalar</h1>
+    <a href="post-job.html" class="btn btn-primary btn-sm">+ Vakansiya yerləşdir</a>
+  </div>
+
+  <div class="layout-filters" style="margin-top:var(--sp-4);">
+    <aside class="filter-panel">
+      <div class="filter-group">
+        <h4>Sahə</h4>
+        <select id="cat-filter" style="width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+          <option value="">Bütün sahələr</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <h4>İş növü</h4>
+        <label><input type="checkbox" class="type-filter" value="Tam ştat"> Tam ştat</label>
+        <label><input type="checkbox" class="type-filter" value="Komissiya"> Komissiya</label>
+        <label><input type="checkbox" class="type-filter" value="Gündəlik"> Gündəlik</label>
+      </div>
+      <div class="filter-group">
+        <h4>Maaş (AZN, min)</h4>
+        <input type="number" id="salary-min" placeholder="Min">
+      </div>
+      <button class="btn btn-dark btn-block" id="apply-filters">Filtrlə</button>
+      <button class="btn btn-ghost btn-block" id="reset-filters" style="margin-top:6px;">Sıfırla</button>
+    </aside>
+    <div id="job-list"></div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const cats = [...new Set(IC_JOBS.map(j=>j.category))];
+  document.getElementById("cat-filter").innerHTML += cats.map(c=>`<option>${c}</option>`).join("");
+
+  let state = { cat:"", types:[], salaryMin:null };
+  function render(){
+    let list = [...IC_JOBS];
+    if(state.cat) list = list.filter(j=>j.category===state.cat);
+    if(state.types.length) list = list.filter(j=>state.types.includes(j.employmentType));
+    if(state.salaryMin) list = list.filter(j=>j.salaryMax >= state.salaryMin);
+    list.sort((a,b)=>b.createdAt-a.createdAt);
+
+    document.getElementById("job-list").innerHTML = list.map(j => `
+      <div class="card" style="flex-direction:row;align-items:center;padding:var(--sp-4);gap:var(--sp-3);margin-bottom:var(--sp-3);">
+        <div class="avatar">${j.company.name.charAt(0)}</div>
+        <div style="flex:1;">
+          <div class="card-title" style="font-size:1.05rem;">${j.title} ${j.premium?'<span class="tag tag-premium" style="display:inline-block;">⭐ Premium</span>':''}</div>
+          <div class="card-meta">${j.company.name} · 📍 ${j.location} · ${j.employmentType} · ${j.experience}</div>
+          <div class="muted" style="font-size:0.85rem;margin-top:4px;">${icMoney(j.salaryMin)} – ${icMoney(j.salaryMax)}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="location.href='messages.html'">Müraciət et</button>
+      </div>
+    `).join("") || `<div class="empty-state"><span class="cat-icon">💼</span><h3>Uyğun vakansiya tapılmadı</h3></div>`;
+  }
+  document.getElementById("apply-filters").addEventListener("click", ()=>{
+    state.cat = document.getElementById("cat-filter").value;
+    state.types = [...document.querySelectorAll(".type-filter:checked")].map(c=>c.value);
+    state.salaryMin = parseFloat(document.getElementById("salary-min").value)||null;
+    render();
+  });
+  document.getElementById("reset-filters").addEventListener("click", ()=>{
+    document.getElementById("cat-filter").value="";
+    document.querySelectorAll(".type-filter").forEach(c=>c.checked=false);
+    document.getElementById("salary-min").value="";
+    state = { cat:"", types:[], salaryMin:null };
+    render();
+  });
+  window.icRerender = render;
+  render();
+</script>
+</body>
+</html>

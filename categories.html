@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bütün kateqoriyalar — IndustrCons Market Place</title>
+<meta name="description" content="Əmlak, texnika, elektronika, kitab, geyim, gözəllik, xidmət və vakansiyalar daxil olmaqla platformadakı bütün kateqoriyaların tam siyahısı.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Kateqoriyalar</div>
+  <h1 style="font-size:1.9rem;">Bütün kateqoriyalar</h1>
+  <p>Tikinti və sənayeyə yönəlmiş marketplace-lə yanaşı, gündəlik ehtiyaclarınız üçün geniş kateqoriya bazası — bina.az, tap.az, turbo.az və beynəlxalq marketplace-lərin əhatə etdiyi hər şey bir yerdə.</p>
+
+  <input type="text" id="cat-search" placeholder="Kateqoriya axtar... (məs: kitab, generator, villa)" style="width:100%;max-width:480px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius-md);margin:var(--sp-3) 0 var(--sp-5);">
+
+  <div class="grid grid-3" id="mega-menu" style="align-items:start;"></div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const megaGroups = [
+    { title:"🏠 Əmlak", base:"property.html", cats:["Mənzil","Həyət evi","Villa","Torpaq","Ofis","Mağaza","Anbar","Sənaye əmlakı"] },
+    { title:"🏗 Texnika və tikinti", base:"equipment.html", cats:["Ekskavatorlar","Kranlar","Forkliftlər","Generatorlar","Kompressorlar","Total stationlar","Əl alətləri"] },
+    { title:"🧱 Tikinti materialları", base:"marketplace.html?category=Tikinti%20materialları", cats:["Kərpic","Sement","Metal profil","Qum-çınqıl","İzolyasiya"] },
+    { title:"📱 Elektronika", base:"marketplace.html?category=Elektronika", cats:["Telefon","Noutbuk","Televizor","Fotoaparat","Qulaqlıq"] },
+    { title:"🛋 Ev əşyaları", base:"marketplace.html?category=Ev%20əşyaları", cats:["Divan","Yataq otağı","Soyuducu","Paltaryuyan","Mətbəx"] },
+    { title:"👕 Geyim", base:"marketplace.html?category=Geyim", cats:["İş geyimi","Ayaqqabı","Baret","Əlcək"] },
+    { title:"📚 Kitab və Məktəb", base:"marketplace.html?category=Kitab%20və%20Məktəb%20ləvazimatları", cats:["Dərslik","Bədii ədəbiyyat","Elmi kitab","Məktəb çantası","Yazı ləvazimatı"] },
+    { title:"💄 Gözəllik və Sağlamlıq", base:"marketplace.html?category=Gözəllik%20və%20Sağlamlıq", cats:["Parfüm","Saç aparatı","Vitamin","Masaj aparatı"] },
+    { title:"🍼 Analar və Uşaqlar", base:"marketplace.html?category=Analar%20və%20Uşaqlar", cats:["Uşaq arabası","Velosiped","Oyuncaq","Geyim"] },
+    { title:"🏋 İdman və Outdoor", base:"marketplace.html?category=İdman%20və%20Outdoor", cats:["İdman dəsti","Velosiped","Fitness","Çadır"] },
+    { title:"🌳 Bağ-bağça", base:"marketplace.html?category=Bağ-bağça", cats:["Bağ mebeli","Ot biçən","Suvarma sistemi"] },
+    { title:"🐾 Heyvanlar", base:"marketplace.html?category=Heyvanlar", cats:["Qəfəs","İt evi","Daşıma qutusu"] },
+    { title:"🖇 Ofis ləvazimatları", base:"marketplace.html?category=Ofis%20ləvazimatları", cats:["Stol","Printer","Sənəd şkafı","Kreslo"] },
+    { title:"🎸 Musiqi və Hobbi", base:"marketplace.html?category=Musiqi%20və%20Hobbi", cats:["Gitara","Rəssamlıq dəsti","İşıq dəsti"] },
+    { title:"🚗 Nəqliyyat", base:"marketplace.html?category=Nəqliyyat", cats:["Minik","Yük maşını","Qoşqu","Ehtiyat hissə"] },
+    { title:"👷 Xidmətlər", base:"services.html", cats:["HVAC","Elektrik","Santexnika","İnteryer dizayn","Mühəndislik"] },
+    { title:"💼 Vakansiyalar", base:"jobs.html", cats:["Tikinti","Mühəndislik","Nəqliyyat","Satış","İdarəetmə"] },
+    { title:"🏨 Otellər / Günlük ev", base:"hotels.html", cats:["Otel","Günlük mənzil","Villa icarəsi"] },
+    { title:"🏢 Şirkətlər", base:"companies.html", cats:["Tikinti şirkəti","Əmlak agentliyi","Texnika icarəsi"] },
+  ];
+
+  function render(filter=""){
+    const f = filter.toLowerCase();
+    const filtered = megaGroups.map(g => ({
+      ...g,
+      cats: g.cats.filter(c => !f || c.toLowerCase().includes(f) || g.title.toLowerCase().includes(f))
+    })).filter(g => g.cats.length || !f);
+
+    document.getElementById("mega-menu").innerHTML = filtered.map(g => `
+      <div class="mega-cat-group">
+        <h3>${g.title}</h3>
+        ${g.cats.map(c=>`<a href="${g.base}">${c}</a>`).join("") || `<a href="${g.base}">Hamısına bax</a>`}
+        <a href="${g.base}" style="font-weight:700;color:var(--signal);margin-top:6px;">Hamısına bax →</a>
+      </div>
+    `).join("") || `<div class="empty-state" style="grid-column:1/-1;"><span class="cat-icon">🔍</span><h3>Uyğun kateqoriya tapılmadı</h3></div>`;
+  }
+  document.getElementById("cat-search").addEventListener("input",(e)=> render(e.target.value));
+  render();
+</script>
+</body>
+</html>

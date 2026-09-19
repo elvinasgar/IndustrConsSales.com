@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vakansiya yerləşdir — IndustrCons Market Place</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="container" style="padding-top:var(--sp-5);padding-bottom:var(--sp-8);">
+  <div class="breadcrumb"><a href="index.html">Home</a> / <a href="jobs.html">Vakansiyalar</a> / Yeni vakansiya</div>
+  <h1 style="font-size:1.7rem;">Vakansiya yerləşdir</h1>
+
+  <div class="form-card">
+    <div class="form-group"><label>Vəzifə adı</label><input type="text" id="j-title" placeholder="Məs: Ekskavator operatoru"></div>
+    <div class="form-group"><label>Sahə</label>
+      <select id="j-cat"><option>Tikinti</option><option>Mühəndislik</option><option>Texnika</option><option>Nəqliyyat</option><option>Satış</option><option>İdarəetmə</option><option>Logistika</option><option>Marketinq</option></select>
+    </div>
+    <div class="flex gap-3">
+      <div class="form-group" style="flex:1;"><label>İş növü</label>
+        <select id="j-type"><option>Tam ştat</option><option>Komissiya</option><option>Gündəlik</option></select>
+      </div>
+      <div class="form-group" style="flex:1;"><label>Tələb olunan təcrübə</label>
+        <select id="j-exp"><option>0-1 il</option><option>1+ il</option><option>2+ il</option><option>3+ il</option><option>5+ il</option></select>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <div class="form-group" style="flex:1;"><label>Maaş, min (AZN)</label><input type="number" id="j-salary-min" placeholder="500"></div>
+      <div class="form-group" style="flex:1;"><label>Maaş, max (AZN)</label><input type="number" id="j-salary-max" placeholder="1200"></div>
+    </div>
+    <div class="form-group">
+      <div class="flex justify-between items-center">
+        <label style="margin-bottom:0;">Vəzifə təsviri</label>
+        <button type="button" class="btn btn-outline btn-sm" id="ai-generate-btn">✨ AI ilə mətn hazırla</button>
+      </div>
+      <textarea id="j-desc" rows="9" placeholder="Vəzifə öhdəlikləri, tələblər, iş şəraiti..." style="margin-top:8px;"></textarea>
+      <div class="hint">"AI ilə mətn hazırla" düyməsi yuxarıdakı sahələrə əsasən nümunə mətn təklif edir — bu, prototipdə şablon əsaslı simulyasiyadır, göndərmədən əvvəl mətni mütləq yoxlayıb redaktə edin.</div>
+      <div id="job-fraud-warning"></div>
+    </div>
+    <div class="form-group"><label>Lokasiya</label>
+      <div id="loc-picker-slot"></div>
+    </div>
+    <button class="btn btn-primary btn-block" id="submit-job">Moderasiyaya göndər</button>
+  </div>
+
+  <div class="form-card text-center" id="job-success" style="display:none;margin-top:var(--sp-4);">
+    <div style="font-size:2.4rem;">✅</div>
+    <h3>Vakansiya göndərildi</h3>
+    <p>Referans: <b id="job-ref"></b> — moderasiyadan sonra dərc olunacaq.</p>
+    <a href="jobs.html" class="btn btn-dark">Vakansiyalara qayıt</a>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listings.js"></script>
+<script src="js/security.js"></script>
+<script>
+  document.getElementById("loc-picker-slot").innerHTML = icLocationPickerHTML("job-loc");
+  icWireLocationPicker("job-loc");
+
+  document.getElementById("ai-generate-btn").addEventListener("click", ()=>{
+    const draft = icGenerateJobDescription({
+      title: document.getElementById("j-title").value,
+      category: document.getElementById("j-cat").value,
+      exp: document.getElementById("j-exp").value,
+      type: document.getElementById("j-type").value,
+    });
+    document.getElementById("j-desc").value = draft;
+    icToast("AI mətn təklifi hazırlandı — göndərmədən əvvəl yoxlayın", "success");
+  });
+
+  document.getElementById("j-desc").addEventListener("input",(e)=>{
+    const res = scanTextForFraud(e.target.value);
+    document.getElementById("job-fraud-warning").innerHTML = res.flagged
+      ? `<div class="alert alert-danger" style="margin-top:8px;"><span>⚠</span><div><b>POTENTIAL FRAUD RISK</b>Bu mətndə şübhəli ifadələr aşkarlandı: ${res.reasons.join(", ")}. Vakansiya əlavə moderasiyaya göndəriləcək.</div></div>`
+      : "";
+  });
+
+  document.getElementById("submit-job").addEventListener("click", ()=>{
+    const loc = icLocationPickerValue("job-loc");
+    const data = {
+      title: document.getElementById("j-title").value || "Vakansiya",
+      category: document.getElementById("j-cat").value,
+      location: [loc.city, loc.district, loc.settlement].filter(Boolean).join(" — "),
+    };
+    const res = createListing(data);
+    document.querySelector(".form-card").style.display = "none";
+    document.getElementById("job-ref").textContent = res.reference;
+    document.getElementById("job-success").style.display = "block";
+    icToast("Vakansiya göndərildi", "success");
+  });
+
+  icRenderCopilot("job");
+</script>
+</body>
+</html>

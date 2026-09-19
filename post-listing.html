@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elan yerləşdir — IndustrCons Market</title>
+<title>Elan yerləşdir — IndustrCons Market Place</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -70,8 +70,11 @@
     <h3>Elan təfərrüatı</h3>
     <div class="form-group"><label>Başlıq</label><input type="text" id="f-title" placeholder="Məs: JCB 3CX 2024, əla vəziyyətdə"></div>
     <div class="form-group">
-      <label>Təsvir</label>
-      <textarea id="f-desc" rows="5" placeholder="Elanınızı ətraflı təsvir edin..."></textarea>
+      <div class="flex justify-between items-center">
+        <label style="margin-bottom:0;">Təsvir</label>
+        <button type="button" class="btn btn-outline btn-sm" id="ai-desc-btn">✨ AI ilə mətn hazırla</button>
+      </div>
+      <textarea id="f-desc" rows="5" placeholder="Elanınızı ətraflı təsvir edin..." style="margin-top:8px;"></textarea>
       <div id="fraud-warning"></div>
     </div>
     <div class="form-group"><label>Qiymət (AZN)</label><input type="number" id="f-price" placeholder="0"></div>
@@ -185,6 +188,16 @@
   });
   document.getElementById("to-4").addEventListener("click", ()=> goStep(4));
 
+  document.getElementById("ai-desc-btn").addEventListener("click", ()=>{
+    const draft = icGenerateListingDescription({
+      title: document.getElementById("f-title").value || listingData.what,
+      category: listingData.category,
+      condition: listingData.type,
+    });
+    document.getElementById("f-desc").value = draft;
+    icToast("AI mətn təklifi hazırlandı — göndərmədən əvvəl yoxlayın", "success");
+  });
+
   document.getElementById("f-desc").addEventListener("input",(e)=>{
     const res = scanTextForFraud(e.target.value);
     const el = document.getElementById("fraud-warning");
@@ -240,6 +253,7 @@
     document.getElementById("stepper").style.display="none";
     icToast("Elan uğurla göndərildi", "success");
   });
+  icRenderCopilot("listing");
 </script>
 </body>
 </html>
