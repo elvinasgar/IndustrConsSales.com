@@ -39,10 +39,7 @@
       </div>
       <div class="filter-group">
         <h4>Lokasiya</h4>
-        <select id="loc-filter" style="width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
-          <option value="">Bütün ərazilər</option>
-          <option>Bakı</option><option>Sumqayıt</option><option>Gəncə</option>
-        </select>
+        <div id="loc-picker-slot"></div>
       </div>
       <div class="filter-group">
         <h4>Qiymət (AZN)</h4>
@@ -84,7 +81,10 @@
     </aside>
 
     <div>
-      <div class="map-placeholder" style="margin-bottom:var(--sp-4);">🗺 Xəritə görünüşü — elanların yerləşdiyi ərazilər (prototip)</div>
+      <div class="map-placeholder" style="flex-direction:column;gap:10px;height:auto;padding:var(--sp-3);margin-bottom:var(--sp-4);">
+        <div>🗺 Xəritə görünüşü — bütün rayonlar (prototip)</div>
+        <div class="chip-row" id="rayon-map-chips" style="justify-content:center;"></div>
+      </div>
       <div class="toolbar">
         <span class="muted" id="result-count">— elan tapıldı</span>
         <div class="flex gap-2 items-center">
@@ -113,12 +113,28 @@
 <script src="js/app.js"></script>
 <script src="js/listings.js"></script>
 <script>
-  let state = { deal:"", categories:[], location:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
+  let state = { deal:"", categories:[], location:"", rayon:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
   const PAGE_SIZE = 8;
+
+  document.getElementById("loc-picker-slot").innerHTML = icLocationPickerHTML("prop-loc");
+  icWireLocationPicker("prop-loc");
+
+  document.getElementById("rayon-map-chips").innerHTML = Object.keys(IC_LOCATION_TREE["Bakı"]).map(r=>`<button class="chip" data-rayon="${r}">${r}</button>`).join("");
+  document.getElementById("rayon-map-chips").addEventListener("click",(e)=>{
+    if(e.target.tagName!=="BUTTON") return;
+    document.querySelectorAll("#rayon-map-chips .chip").forEach(c=>c.classList.remove("active"));
+    const active = state.rayon === e.target.dataset.rayon;
+    state.rayon = active ? "" : e.target.dataset.rayon;
+    if(!active) e.target.classList.add("active");
+    state.page = 1;
+    applyAll();
+  });
 
   function readFilters(){
     state.categories = [...document.querySelectorAll(".cat-filter:checked")].map(c=>c.value);
-    state.location = document.getElementById("loc-filter").value;
+    const loc = icLocationPickerValue("prop-loc");
+    state.location = loc.city;
+    state.rayon = loc.district || state.rayon;
     state.priceMin = parseFloat(document.getElementById("price-min").value) || null;
     state.priceMax = parseFloat(document.getElementById("price-max").value) || null;
     state.sort = document.getElementById("sort-select").value;
@@ -131,6 +147,7 @@
     else if(state.deal) list = list.filter(i => i.deal === state.deal);
     if(state.categories.length) list = list.filter(i => state.categories.includes(i.category));
     if(state.location) list = list.filter(i => i.city === state.location);
+    if(state.rayon) list = list.filter(i => i.location === state.rayon);
     if(state.priceMin) list = list.filter(i => i.price >= state.priceMin);
     if(state.priceMax) list = list.filter(i => i.price <= state.priceMax);
 
@@ -173,17 +190,17 @@
   document.getElementById("apply-filters").addEventListener("click", ()=>{ readFilters(); applyAll(); });
   document.getElementById("reset-filters").addEventListener("click", ()=>{
     document.querySelectorAll(".cat-filter, .cond-filter").forEach(c=>c.checked=false);
-    document.getElementById("loc-filter").value="";
     document.getElementById("price-min").value=""; document.getElementById("price-max").value="";
     document.getElementById("area-min").value=""; document.getElementById("area-max").value="";
     document.getElementById("doc-filter").checked=false; document.getElementById("mortgage-filter").checked=false;
-    document.querySelectorAll("#room-chips .chip").forEach(c=>c.classList.remove("active"));
-    state = { deal:"", categories:[], location:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
+    document.querySelectorAll("#room-chips .chip, #rayon-map-chips .chip").forEach(c=>c.classList.remove("active"));
+    state = { deal:"", categories:[], location:"", rayon:"", priceMin:null, priceMax:null, sort:"relevance", page:1 };
     document.getElementById("sort-select").value = "relevance";
     document.querySelectorAll("#deal-chips .chip").forEach(c=>c.classList.remove("active"));
     document.querySelector('#deal-chips .chip[data-deal=""]').classList.add("active");
     applyAll();
   });
+  window.icRerender = applyAll;
   document.getElementById("sort-select").addEventListener("change", ()=>{ state.sort = document.getElementById("sort-select").value; applyAll(); });
   document.getElementById("grid-view-btn").addEventListener("click",(e)=>{
     document.getElementById("property-grid").classList.remove("grid-3");

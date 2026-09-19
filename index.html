@@ -18,7 +18,7 @@
     <div class="container">
       <div class="hero-tag">ALMAQ · SATMAQ · İCARƏYƏ GÖTÜRMƏK</div>
       <h1>Əmlak, texnika və xidmətlər<br>bir platformada.</h1>
-      <p class="hero-sub">IndustrCons Market Azərbaycanın tikinti və sənaye sektoru üçün qurulmuş etibarlı bazardır — yoxlanılmış satıcılar, şəffaf elanlar.</p>
+      <p class="hero-sub">IndustrCons Market Azərbaycanın tikinti və sənaye sektoru üçün qurulmuş etibarlı bazardır — yoxlanılmış satıcılar, şəffaf elanlar, günlük evlər və otellər bir platformada. Xarici vətəndaşlar üçün AZN, USD və TRY hesablaması ilə.</p>
 
       <form class="search-panel" id="hero-search-form">
         <input type="text" id="hero-search-input" placeholder="Nə axtarırsınız? Məs: JCB 3CX, 3 otaqlı mənzil..." />
@@ -54,6 +54,7 @@
         <a class="cat-card" href="marketplace.html?status=Yeni"><span class="cat-icon">📦</span><span>Yeni məhsullar</span></a>
         <a class="cat-card" href="marketplace.html?status=İşlənmiş"><span class="cat-icon">♻️</span><span>2-ci əl</span></a>
         <a class="cat-card" href="equipment.html?deal=rent"><span class="cat-icon">🔄</span><span>İcarə</span></a>
+        <a class="cat-card" href="hotels.html"><span class="cat-icon">🏨</span><span>Otellər / Günlük ev</span></a>
       </div>
     </div>
   </section>
@@ -120,8 +121,12 @@
 <script src="js/app.js"></script>
 <script src="js/listings.js"></script>
 <script>
-  icRenderCards("featured-grid", icAllListings().sort((a,b)=>b.views-a.views).slice(0,8));
-  icRenderCards("equipment-grid", IC_EQUIPMENT.slice(0,4));
+  function renderHome(){
+    icRenderCards("featured-grid", icAllListings().sort((a,b)=>b.views-a.views).slice(0,8));
+    icRenderCards("equipment-grid", IC_EQUIPMENT.slice(0,4));
+  }
+  window.icRerender = renderHome;
+  renderHome();
 
   document.getElementById("company-grid").innerHTML = IC_COMPANIES.slice(0,3).map(c => `
     <a href="company-detail.html?id=${c.id}" class="card" style="text-decoration:none;">

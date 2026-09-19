@@ -25,6 +25,11 @@
         <label><input type="checkbox" class="cat-filter" value="Tikinti materialları"> Tikinti materialları</label>
         <label><input type="checkbox" class="cat-filter" value="Alətlər"> Alətlər</label>
         <label><input type="checkbox" class="cat-filter" value="Nəqliyyat"> Nəqliyyat</label>
+        <label><input type="checkbox" class="cat-filter" value="Geyim"> Geyim</label>
+        <label><input type="checkbox" class="cat-filter" value="Uşaq aləmi"> Uşaq aləmi</label>
+        <label><input type="checkbox" class="cat-filter" value="İdman"> İdman</label>
+        <label><input type="checkbox" class="cat-filter" value="Bağ-bağça"> Bağ-bağça</label>
+        <label><input type="checkbox" class="cat-filter" value="Heyvanlar"> Heyvanlar</label>
       </div>
       <div class="filter-group">
         <h4>Vəziyyət</h4>
@@ -144,6 +149,7 @@
   });
   document.getElementById("sort-select").addEventListener("change", (e)=>{ state.sort = e.target.value; applyAll(); });
 
+  window.icRerender = applyAll;
   applyAll();
 </script>
 </body>

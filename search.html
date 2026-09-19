@@ -59,13 +59,16 @@
     icRenderCards("search-grid", results);
   }
 
+  let currentTab = "all";
   document.getElementById("result-tabs").addEventListener("click",(e)=>{
     if(e.target.tagName!=="BUTTON") return;
     document.querySelectorAll("#result-tabs button").forEach(b=>b.classList.remove("active"));
     e.target.classList.add("active");
-    renderTab(e.target.dataset.tab);
+    currentTab = e.target.dataset.tab;
+    renderTab(currentTab);
   });
 
+  window.icRerender = ()=> renderTab(currentTab);
   renderTab("all");
 </script>
 </body>

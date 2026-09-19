@@ -87,11 +87,11 @@
   document.getElementById("detail-desc").textContent = item.description;
 
   const isProperty = item.kind === "property";
-  document.getElementById("detail-price").textContent = isProperty
-    ? `${icPrice(item.price)} ${item.priceUnit}`
-    : (item.kind==="equipment"
-        ? (item.forSale ? `${icPrice(item.salePrice)} AZN` : `${icPrice(item.rentPrice)} ${item.rentUnit}`)
-        : `${icPrice(item.price)} ${item.priceUnit}`);
+  function renderPrice(){
+    document.getElementById("detail-price").textContent = icMoney(item.price, ` ${icPriceUnitSuffix(item.priceUnit)}`.trimEnd());
+  }
+  window.icRerender = renderPrice;
+  renderPrice();
 
   document.getElementById("badge-row").innerHTML = `
     ${item.premium ? '<span class="tag tag-premium">⭐ PREMIUM</span>' : ''}

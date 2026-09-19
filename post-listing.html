@@ -76,7 +76,7 @@
     </div>
     <div class="form-group"><label>Qiymət (AZN)</label><input type="number" id="f-price" placeholder="0"></div>
     <div class="form-group"><label>Lokasiya</label>
-      <select id="f-location"><option>Bakı — Yasamal</option><option>Bakı — Nərimanov</option><option>Bakı — Nəsimi</option><option>Sumqayıt</option><option>Gəncə</option></select>
+      <div id="loc-picker-slot"></div>
     </div>
     <div class="form-group">
       <label>Şəkillər</label>
@@ -145,6 +145,8 @@
     "Nəqliyyat": ["Minik avtomobili","Yük maşını","Qoşqu","Ehtiyat hissələri"]
   };
   let listingData = { images: [] };
+  document.getElementById("loc-picker-slot").innerHTML = icLocationPickerHTML("post-loc");
+  icWireLocationPicker("post-loc");
 
   function goStep(n){
     document.querySelectorAll(".step-panel").forEach(p=>p.style.display="none");
@@ -201,7 +203,9 @@
     listingData.title = document.getElementById("f-title").value || "Adsız elan";
     listingData.desc = document.getElementById("f-desc").value;
     listingData.price = document.getElementById("f-price").value || 0;
-    listingData.location = document.getElementById("f-location").value;
+    const loc = icLocationPickerValue("post-loc");
+    listingData.location = [loc.city, loc.district, loc.settlement, loc.street].filter(Boolean).join(" — ");
+    listingData.metro = loc.metro;
     goStep(5);
   });
   document.getElementById("to-6").addEventListener("click", ()=>{
@@ -212,7 +216,7 @@
     document.getElementById("preview-card").innerHTML = `
       <div class="card-media"><img src="${listingData.images[0] || icImg('preview')}" alt=""></div>
       <div class="card-body">
-        <div class="card-price">${icPrice(listingData.price)} AZN</div>
+        <div class="card-price">${icMoney(Number(listingData.price))}</div>
         <div class="card-title">${listingData.title}</div>
         <div class="card-meta">${listingData.category} · ${listingData.type}</div>
         <div class="card-loc">📍 ${listingData.location}</div>

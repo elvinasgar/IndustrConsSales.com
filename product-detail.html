@@ -92,17 +92,25 @@
     ${isEquipment ? (item.forSale?'<span class="tag tag-new">Satılır</span>':'') + (item.forRent?'<span class="tag tag-rent">İcarə</span>':'') : `<span class="tag ${item.status==='Yeni'?'tag-new':'tag-used'}">${item.status}</span>`}
   `;
 
+  function renderPrice(){
+    if(isEquipment){
+      document.getElementById("detail-price").textContent = item.forSale ? icMoney(item.salePrice) : "";
+      document.getElementById("detail-rent-price").textContent = item.forRent ? `İcarə: ${icMoney(item.rentPrice, " /gün")}` : "";
+    } else {
+      document.getElementById("detail-price").textContent = icMoney(item.price);
+      document.getElementById("detail-rent-price").textContent = item.rentPrice ? `İcarə: ${icMoney(item.rentPrice, " /gün")}` : "";
+    }
+  }
+  window.icRerender = renderPrice;
+  renderPrice();
+
   if(isEquipment){
-    document.getElementById("detail-price").textContent = item.forSale ? `${icPrice(item.salePrice)} AZN` : "";
-    document.getElementById("detail-rent-price").textContent = item.forRent ? `İcarə: ${icPrice(item.rentPrice)} ${item.rentUnit}` : "";
     document.getElementById("spec-grid").innerHTML = [
       ["İl", item.year], ["Yanacaq", item.fuel], ["Ötürücü", item.drive || "—"],
       ["Motosaat", item.hours], ["Kateqoriya", item.category]
     ].map(([l,v])=>`<div class="spec-item"><div class="label">${l}</div><div class="value">${v}</div></div>`).join("");
     if(item.forRent) document.getElementById("rental-note").innerHTML = `<div class="alert alert-success">✓ Bu avadanlıq gündəlik icarəyə verilir. Çatdırılma seçimi barədə satıcı ilə əlaqə saxlayın.</div>`;
   } else {
-    document.getElementById("detail-price").textContent = `${icPrice(item.price)} ${item.priceUnit}`;
-    if(item.rentPrice) document.getElementById("detail-rent-price").textContent = `İcarə: ${icPrice(item.rentPrice)} AZN/gün`;
     document.getElementById("spec-grid").innerHTML = Object.entries(item.specs || {}).map(([l,v])=>`<div class="spec-item"><div class="label">${l}</div><div class="value">${v}</div></div>`).join("")
       + `<div class="spec-item"><div class="label">Kateqoriya</div><div class="value">${item.category}</div></div>`;
   }

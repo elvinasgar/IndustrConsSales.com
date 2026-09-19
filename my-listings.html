@@ -46,7 +46,9 @@
     <tr><td>${d.title}</td><td>${d.id}</td><td><span class="status-pill status-pending">PENDING</span></td><td>${icTimeAgo(d.createdAt)}</td></tr>
   `).join("") : `<tr><td colspan="4" class="muted">Hələ göndərilmiş elan yoxdur. <a href="post-listing.html">Elan yerləşdirin</a>.</td></tr>`;
 
-  icRenderCards("active-grid", [...IC_PROPERTY.slice(0,2), ...IC_EQUIPMENT.slice(0,2)]);
+  function renderMyListings(){ icRenderCards("active-grid", [...IC_PROPERTY.slice(0,2), ...IC_EQUIPMENT.slice(0,2)]); }
+  window.icRerender = renderMyListings;
+  renderMyListings();
 </script>
 </body>
 </html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Otellər və Günlük Evlər — IndustrCons Market</title>
+<meta name="description" content="Bakı, Sumqayıt və Gəncədə otellər və günlük kirayə evlər — tarix seçin, qiymətləri müqayisə edin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .stay-search{ background:#fff; border-radius:var(--radius-md); padding:var(--sp-4); box-shadow:0 12px 30px rgba(0,0,0,.12); display:flex; gap:var(--sp-2); flex-wrap:wrap; margin-top:-40px; position:relative; z-index:5; }
+  .stay-search > div{ flex:1 1 150px; }
+  .stay-search label{ display:block; font-size:0.72rem; font-weight:700; color:var(--ink-soft); margin-bottom:4px; text-transform:uppercase; letter-spacing:.4px; }
+  .stay-search input, .stay-search select{ width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.9rem; }
+  .hotel-row{ display:flex; gap:var(--sp-3); background:#fff; border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; margin-bottom:var(--sp-3); }
+  .hotel-row img{ width:220px; object-fit:cover; }
+  @media (max-width:700px){ .hotel-row{ flex-direction:column; } .hotel-row img{ width:100%; height:180px; } }
+  .hotel-row .hotel-body{ padding:var(--sp-3) var(--sp-4); flex:1; display:flex; flex-direction:column; }
+  .stars{ color:#C9781A; letter-spacing:1px; }
+  .hotel-price-col{ padding:var(--sp-4); text-align:right; display:flex; flex-direction:column; justify-content:center; align-items:flex-end; gap:6px; min-width:160px; border-left:1px solid var(--concrete-100); }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<section class="hero" style="padding-bottom:var(--sp-6);">
+  <div class="container">
+    <div class="hero-tag">OTELLƏR · GÜNLÜK EVLƏR</div>
+    <h1 style="font-size:2.2rem;">Qalacağınız yeri tapın</h1>
+    <p class="hero-sub">Xarici qonaqlar üçün rahat: tarix seçin, qiyməti AZN, USD və ya TRY ilə görün.</p>
+  </div>
+</section>
+
+<main class="container">
+  <form class="stay-search" id="stay-form">
+    <div><label>Şəhər</label>
+      <select id="stay-city"><option>Bakı</option><option>Sumqayıt</option><option>Gəncə</option></select>
+    </div>
+    <div><label>Giriş tarixi</label><input type="date" id="stay-checkin"></div>
+    <div><label>Çıxış tarixi</label><input type="date" id="stay-checkout"></div>
+    <div><label>Qonaq sayı</label><input type="number" id="stay-guests" value="2" min="1" max="10"></div>
+    <div style="flex:0 0 auto;align-self:flex-end;"><button class="btn btn-primary" style="height:42px;">Axtar</button></div>
+  </form>
+
+  <div class="section-head" style="margin-top:var(--sp-6);">
+    <div><h2>Otellər</h2><p id="nights-label" class="muted">Tarix seçin, ümumi qiymət hesablansın</p></div>
+    <div class="chip-row">
+      <button class="chip active" data-stars="0">Hamısı</button>
+      <button class="chip" data-stars="5">5 ulduz</button>
+      <button class="chip" data-stars="4">4 ulduz</button>
+      <button class="chip" data-stars="3">3 ulduz</button>
+    </div>
+  </div>
+  <div id="hotel-list"></div>
+
+  <div class="section-head" style="margin-top:var(--sp-6);">
+    <div><h2>Günlük kirayə evlər</h2><p>Ev şəraitində qısamüddətli qalma — mənzil və villalar</p></div>
+    <a href="property.html?deal=Günlük" class="btn btn-outline btn-sm">Hamısına bax</a>
+  </div>
+  <div class="grid" id="daily-grid" style="margin-bottom:var(--sp-8);"></div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  let starFilter = 0;
+  let nights = 1;
+
+  function renderHotels(){
+    const list = IC_HOTELS.filter(h => h.city === document.getElementById("stay-city").value)
+      .filter(h => !starFilter || h.stars === starFilter);
+    document.getElementById("hotel-list").innerHTML = list.map(h => `
+      <div class="hotel-row">
+        <img src="${h.image}" alt="${h.name}">
+        <div class="hotel-body">
+          <h3 style="margin-bottom:2px;">${h.name}</h3>
+          <div class="stars">${"★".repeat(h.stars)}${"☆".repeat(5-h.stars)}</div>
+          <div class="muted" style="font-size:0.85rem;">📍 ${h.district}, ${h.city} · 🚇 ${h.metro} metrosuna yaxın</div>
+          <div style="margin-top:6px;font-size:0.82rem;color:var(--ink-soft);">${h.amenities.join(" · ")}</div>
+          <div class="verified-badge" style="margin-top:8px;">${ICON.check} ${h.rating} / 10 · ${h.reviews} rəy</div>
+        </div>
+        <div class="hotel-price-col">
+          <div class="muted" style="font-size:0.78rem;">1 gecə</div>
+          <div class="card-price">${icMoney(h.pricePerNight)}</div>
+          <div class="muted" style="font-size:0.78rem;">${nights} gecə üçün cəmi</div>
+          <div style="font-weight:700;">${icMoney(h.pricePerNight * nights)}</div>
+          <button class="btn btn-dark btn-sm" onclick="icToast('Demo: rezervasiya sorğusu göndərildi', 'success')">Otağı seç</button>
+        </div>
+      </div>
+    `).join("") || `<div class="empty-state"><span class="cat-icon">🏨</span><h3>Bu şəhərdə otel tapılmadı</h3></div>`;
+  }
+
+  function renderDaily(){
+    const daily = IC_PROPERTY.filter(p => p.deal === "Günlük");
+    icRenderCards("daily-grid", daily);
+  }
+
+  function updateNights(){
+    const inD = document.getElementById("stay-checkin").value;
+    const outD = document.getElementById("stay-checkout").value;
+    if(inD && outD){
+      const diff = Math.round((new Date(outD) - new Date(inD)) / 86400000);
+      nights = diff > 0 ? diff : 1;
+    } else nights = 1;
+    document.getElementById("nights-label").textContent = `${nights} gecəlik axtarış üçün qiymətlər`;
+  }
+
+  document.getElementById("stay-form").addEventListener("submit",(e)=>{ e.preventDefault(); updateNights(); renderHotels(); });
+  document.querySelector(".chip-row").addEventListener("click",(e)=>{
+    if(e.target.tagName!=="BUTTON") return;
+    document.querySelectorAll(".chip-row .chip").forEach(c=>c.classList.remove("active"));
+    e.target.classList.add("active");
+    starFilter = parseInt(e.target.dataset.stars);
+    renderHotels();
+  });
+
+  window.icRerender = ()=>{ renderHotels(); renderDaily(); };
+  updateNights();
+  renderHotels();
+  renderDaily();
+</script>
+</body>
+</html>

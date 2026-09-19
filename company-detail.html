@@ -65,8 +65,11 @@
     if(e.target.tagName!=="BUTTON") return;
     document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
     e.target.classList.add("active");
-    renderTab(e.target.dataset.tab);
+    currentTab = e.target.dataset.tab;
+    renderTab(currentTab);
   });
+  let currentTab = "about";
+  window.icRerender = ()=> renderTab(currentTab);
   renderTab("about");
 </script>
 </body>

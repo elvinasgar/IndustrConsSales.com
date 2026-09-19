@@ -68,14 +68,18 @@
   const myListings = [...IC_PROPERTY.slice(0,2), ...IC_EQUIPMENT.slice(0,2), ...IC_MARKETPLACE.slice(0,1)];
   const statuses = ["status-active","status-pending","status-active","status-rejected","status-sold"];
   const statusLabels = ["Aktiv","Gözləmədə","Aktiv","Rədd edilib","Satıldı"];
-  document.getElementById("listings-table-body").innerHTML = myListings.map((l,i)=>`
-    <tr>
-      <td><a href="${l.kind==='property'?'property-detail.html':'product-detail.html'}?id=${l.id}">${l.title}</a></td>
-      <td>${icPrice(l.price ?? l.salePrice)} AZN</td>
-      <td><span class="status-pill ${statuses[i]}">${statusLabels[i]}</span></td>
-      <td>${icPrice(l.views)}</td>
-      <td><a href="post-listing.html" class="muted">Redaktə</a></td>
-    </tr>`).join("");
+  function renderMyTable(){
+    document.getElementById("listings-table-body").innerHTML = myListings.map((l,i)=>`
+      <tr>
+        <td><a href="${l.kind==='property'?'property-detail.html':'product-detail.html'}?id=${l.id}">${l.title}</a></td>
+        <td>${icMoney(l.price ?? l.salePrice)}</td>
+        <td><span class="status-pill ${statuses[i]}">${statusLabels[i]}</span></td>
+        <td>${icPrice(l.views)}</td>
+        <td><a href="post-listing.html" class="muted">Redaktə</a></td>
+      </tr>`).join("");
+  }
+  window.icRerender = renderMyTable;
+  renderMyTable();
 
   const pipeline = [
     { stage:"NEW", leads:[{name:"Ali",listing:"JCB 3CX",time:"Bu gün"}] },
